@@ -4,6 +4,7 @@ useHead({
     return titleChunk ? `Uniwersytet Pomorski Planner Pensum - ${titleChunk}` : 'Uniwersytet Pomorski Planner Pensum';
   }
 })
+
 </script>
 <template>
 <div class="min-h-full">
