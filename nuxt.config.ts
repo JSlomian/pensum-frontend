@@ -4,7 +4,7 @@ import {createResolver} from "@nuxt/kit";
 export default defineNuxtConfig({
     compatibilityDate: '2024-11-01',
     devtools: {enabled: true},
-    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth'],
+    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth', '@pinia/nuxt'],
     auth: {
         provider: {
             type: 'local'

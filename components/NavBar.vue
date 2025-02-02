@@ -19,24 +19,45 @@
                         activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
                         >Strona główna
               </NuxtLink>
-              <!--              <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>-->
-              <a href="#"
-                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
+              <NuxtLink to="/kierunki"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                        >Kierunki
+              </NuxtLink>
+              <NuxtLink to="/programy"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                        >Programy
+              </NuxtLink>
+              <NuxtLink to="/wykladowcy"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                        >Wykładowcy
+              </NuxtLink>
+              <NuxtLink to="/przydzialy-godzin"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                        >Przydziały godzin
+              </NuxtLink>
+              <NuxtLink to="/stanowiska"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+                        >Stanowiska
+              </NuxtLink>
               <NuxtLink to="/formy-zajec"
                         class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
                         activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
               >Formy zajęć
               </NuxtLink>
-              <a href="#"
-                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-              <a href="#"
-                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
-              <a href="#"
-                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reports</a>
+              <NuxtLink to="/jednostki-organizacyjne"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+                        activeClass="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
+              >Jednostki Organizacyjne
+              </NuxtLink>
             </div>
           </div>
         </div>
-        <div class="hidden md:block">
+        <div v-show="false" class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
             <button type="button"
                     class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
@@ -50,7 +71,7 @@
             </button>
 
             <!-- Profile dropdown -->
-            <div class="relative ml-3">
+            <div v-show="false" class="relative ml-3">
               <div>
                 <button type="button"
                         class="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
@@ -87,7 +108,7 @@
             </div>
           </div>
         </div>
-        <div class="-mr-2 flex md:hidden">
+        <div v-show="false" class="-mr-2 flex md:hidden">
           <!-- Mobile menu button -->
           <button type="button"
                   class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
@@ -110,7 +131,7 @@
     </div>
 
     <!-- Mobile menu, show/hide based on menu state. -->
-    <div class="md:hidden" id="mobile-menu">
+    <div v-show="false" class="md:hidden" id="mobile-menu">
       <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
         <a href="#" class="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white" aria-current="page">Dashboard</a>
