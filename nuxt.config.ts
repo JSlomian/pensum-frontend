@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     devtools: {enabled: true},
     modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth', '@pinia/nuxt'],
     auth: {
+        // globalAppMiddleware: true,
         provider: {
             type: 'local'
         }

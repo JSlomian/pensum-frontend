@@ -109,5 +109,4 @@ const openDeleteModal = (classType: { id: number, type: string, abbreviation: st
 </template>
 
 <style scoped>
-
 </style>
