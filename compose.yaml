@@ -1,0 +1,61 @@
+services:
+  nginx:
+    image: nginx:latest
+    working_dir: /var/www/
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+
+  backend:
+    working_dir: /var/www/api
+    environment:
+      - APP_ENV=PROD
+    build: 
+      context: ./api
+      dockerfile: ../docker/php/Dockerfile
+    volumes:
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php-override.ini
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    working_dir: /var/www/app
+    build:
+      context: ./app
+      dockerfile: ../docker/node/Dockerfile
+    expose:
+      - 3000
+    networks:
+      - app-network
+
+  db:
+    container_name: db
+    image: postgres:latest
+    restart: always
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-api}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
