@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
@@ -8,8 +7,8 @@
       <div class="flex h-16 items-center justify-between">
         <div class="flex items-center">
           <div class="shrink-0">
-            <img class="size-8" src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
-                 alt="Your Company">
+            <img class="w-[100px] h-auto p-1" src="/logo.svg" style="background: aliceblue"
+                 alt="Logo UPSL">
           </div>
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">

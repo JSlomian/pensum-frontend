@@ -11,7 +11,7 @@ const emit = defineEmits(['success'])
 
 const handleSubmit = async () => {
   try {
-    await callPost({type: name.value, abbreviation: abbreviation.value})
+    await callPost({name: name.value, abbreviation: abbreviation.value})
     emit('success');
     name.value = ''
     abbreviation.value = ''
@@ -54,7 +54,7 @@ const abortAddNew = () => {
               id="name"
               maxlength="50"
               class="mt-1 block w-full px-4 py-2 text-gray-700 bg-gray-50 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Nazwa zajęć"
+              placeholder="Nazwa jednostki"
               required
           />
         </div>
