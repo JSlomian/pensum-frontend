@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
     const {api_url} = useRuntimeConfig()
-    const path = event.node.req.url || ''
+    let url = event.node.req.url || ''
+    const path = url.replace(/^\/api/, '');
     const method = event.node.req.method || 'GET'
 
     const queryParams = getQuery(event);
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         return await $fetch(`${api_url}${path}`, {
-            method: method,
+            method,
             query: queryParams,
             body,
             headers: event.node.req.headers as Record<string, string>
