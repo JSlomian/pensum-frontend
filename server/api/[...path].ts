@@ -2,7 +2,9 @@ export default defineEventHandler(async (event) => {
     const {api_url} = useRuntimeConfig()
     let url = event.node.req.url || ''
     const path = url.replace(/^\/api/, '');
-    const method = event.node.req.method || 'GET'
+
+    type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    const method = (event.node.req.method as HttpMethod) || 'GET';
 
     const queryParams = getQuery(event);
 
