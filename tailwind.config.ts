@@ -10,7 +10,7 @@ export default <Partial<Config>>{
         "./nuxt.config.{js,ts}",
         "./node_modules/flowbite/**/*.js",
     ],
-    plugins: [flowbite()],
+    plugins: [flowbite],
     darkMode: 'class',
     theme: {
         extend: {

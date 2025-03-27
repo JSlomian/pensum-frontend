@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        let res = await $fetch(`${api_url}${path}`, {
+        return await $fetch(`${api_url}${path}`, {
             method,
             query: queryParams,
             body,

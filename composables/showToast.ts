@@ -1,6 +1,6 @@
 import {createVNode, render, type DefineComponent} from 'vue'
 
-export async function showToast(type: 'success' | 'danger' | 'warning', message: string, timeout = 5000) {
+export async function showToast(type: 'success' | 'danger' | 'warning', message: string) {
     const container = document.createElement('div')
     let toaster = document.querySelector('#toaster')
     toaster?.appendChild(container)
@@ -18,7 +18,7 @@ export async function showToast(type: 'success' | 'danger' | 'warning', message:
             break;
     }
     // Create a VNode for ToastSuccess with the provided props
-    const vnode = createVNode(Toast, {message, timeout})
+    const vnode = createVNode(Toast, {message})
 
     // Render the VNode into the container
     render(vnode, container)
@@ -27,5 +27,5 @@ export async function showToast(type: 'success' | 'danger' | 'warning', message:
     setTimeout(() => {
         render(null, container)
         toaster?.removeChild(container)
-    }, timeout + 1200)
+    },3000)
 }

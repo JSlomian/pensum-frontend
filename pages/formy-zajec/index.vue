@@ -1,28 +1,54 @@
 <script setup lang="ts">
+import AlertWarning from "~/components/Alert/AlertWarning.vue";
+
 const route = '/api/class_types'
 useHead({
   title: 'Formy zajęć'
 })
-const {data, refresh} = await useFetch(route, {lazy: true})
+
+type ClassType = {
+  id: number,
+  type: string,
+  abbreviation: string
+}
+const {data, refresh} = await useFetch<{ member: ClassType[] }>(route)
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
-const editId = ref<number | null>(null)
-const deleteId = ref<number | null>(null)
+const editId = ref<number>(0)
+const deleteId = ref<number>(0)
 const modalOpen = ref(false)
+const modalText = ref('')
 
 const cancelEdit = (): void => {
-  editId.value = null
+  editId.value = 0
 }
 
-const handleDelete = (id: number) => {
-  callDelete(id)
-  modalOpen.value = false
-  refresh()
+const handleDelete = (id: number): void => {
+  let ct: ClassType | undefined; // Declare ct in an outer scope
+  try {
+    ct = data.value?.member.find((c: ClassType) => c.id === id);
+    if (!ct) {
+      showToast('danger', 'Przekazano id do nieistniejącej pozycji');
+      modalOpen.value = false
+      return
+    }
+    callDelete(ct.id)
+    modalOpen.value = false
+    refresh()
+    showToast('success', `Usunięto ${ct.type}`)
+  } catch (e) {
+    showToast('danger', `Nie udało się usunąć.`)
+  }
 }
 
-const handleUpdate = (classType: { id: number, type: string, abbreviation: string }): void => {
-  callUpdate(classType)
-  handleCancelEdit()
+const handleUpdate = (classType: ClassType): void => {
+  try {
+    callUpdate(classType)
+    handleCancelEdit()
+    showToast('success', `Zaktualizowano ${classType.type}`)
+  } catch (e) {
+    showToast('danger', `Nie udało się zaktualizować.`)
+  }
 }
 
 const handleCancelEdit = (): void => {
@@ -30,10 +56,7 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const modalTitle = ref('Usuwanie formy zajęć')
-const modalText = ref('')
-
-const openDeleteModal = (classType: { id: number, type: string, abbreviation: string }): void => {
+const openDeleteModal = (classType: ClassType): void => {
   modalOpen.value = true
   deleteId.value = classType.id
   modalText.value = `Czy napewno chcesz usunąć formę zajęć <span style="font-weight: bold">${classType.type}</span>?`
@@ -43,10 +66,12 @@ const openDeleteModal = (classType: { id: number, type: string, abbreviation: st
 </script>
 
 <template>
-  <ModalDelete v-if="modalOpen" :title="modalTitle" :text="modalText" @confirm="handleDelete(deleteId)" @abort="modalOpen = false" />
+  <ModalDelete v-if="modalOpen" :text="modalText" @confirm="handleDelete(deleteId)"
+               @abort="modalOpen = false"/>
   <div class="container mx-auto p-6">
     <AddNewClassType @success="refresh" :route="route"/>
-    <div v-if="data?.member?.length > 0" class="overflow-hidden rounded-lg border border-gray-200 shadow-md">
+    <div v-if="data?.member && data?.member?.length > 0"
+         class="overflow-hidden rounded-lg border border-gray-200 shadow-md">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100">
         <tr>
@@ -100,10 +125,7 @@ const openDeleteModal = (classType: { id: number, type: string, abbreviation: st
         </tbody>
       </table>
     </div>
-    <div v-else class="block relative mb-4 mt-4 rounded-lg border border-red-300 bg-red-100 p-4 text-red-700"
-         role="alert">
-      <span class="block sm:inline">Brak dostępnych form zajęć, dodaj nowe.</span>
-    </div>
+    <AlertWarning v-if="data?.member && data?.member?.length == 0" message="Brak dostępnych form zajęć, dodaj nowe." />
   </div>
 
 </template>

@@ -12,27 +12,13 @@ useHead({
   }
 })
 
-onMounted(() => {
-  setTimeout(() => {
-    showToast('success', '', 5000)
-  }, 1000)
-  setTimeout(() => {
-    showToast('success', '', 5000)
-  }, 1500)
-  setTimeout(() => {
-    showToast('success', '', 5000)
-  }, 1200)
-  setTimeout(() => {
-    showToast('success', '', 5000)
-  }, 1000)
-  setTimeout(() => {
-    showToast('success', '', 5000)
-  }, 1000)
-})
+// onErrorCaptured((err, instance, info) => {
+//   showToast('danger', info)
+// })
 </script>
 <template>
   <nav>
-    <NewNav/>
+    <NavBar/>
   </nav>
   <main>
     <NuxtPage/>

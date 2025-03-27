@@ -7,7 +7,7 @@ export default defineNuxtConfig({
         '@nuxtjs/tailwindcss',
         '@sidebase/nuxt-auth',
         '@pinia/nuxt',
-        '@nuxtjs/i18n',
+        // '@nuxtjs/i18n',
         // './modules/flowbite'
     ],
     tailwindcss: {
@@ -17,7 +17,7 @@ export default defineNuxtConfig({
         api_url: 'http://localhost:8000'
     },
     auth: {
-        globalAppMiddleware: true,
+        globalAppMiddleware: false,
         isEnabled: true,
         disableServerSideAuth: false,
         // secret: "68767b88d5e3df412d72f2376044f02b6fb91028c264b53e12ba816a20fbcd1c",
@@ -45,8 +45,17 @@ export default defineNuxtConfig({
         {
             src: 'plugins/flowbite.client.js', mode: 'client'
         }],
-    i18n: {
-        strategy: 'no_prefix',
-        defaultLocale: 'pl'
-    },
+    // i18n: {
+    //     locales: ['pl', 'en'],
+    //     defaultLocale: 'en',
+    //     strategy: 'no_prefix',
+    //     customRoutes: 'config',
+    //     detectBrowserLanguage: false,
+    //     pages: {
+    //         institutes: {
+    //             pl: '/jednostki--organizacyjne',
+    //             en: '/institutes'
+    //         }
+    //     }
+    // },
 })
