@@ -11,7 +11,8 @@ const emit = defineEmits(['success'])
 
 const handleSubmit = async () => {
   try {
-    await callPost({name: name.value, abbreviation: abbreviation.value})
+    await callPost({name: name.value, abbreviation: abbreviation.value} satisfies Institute)
+    await showToast("success", `Dodano nową jednostkę ${name.value}`)
     emit('success');
     name.value = ''
     abbreviation.value = ''
@@ -19,6 +20,7 @@ const handleSubmit = async () => {
     hasErrors.value = false
   } catch (e) {
     hasErrors.value = true
+    await showToast("danger", `Nie udało się dodać ${name.value}`)
   }
 }
 
@@ -34,76 +36,49 @@ const abortAddNew = () => {
 <template>
   <!-- Add New Button -->
   <div v-if="!addNew" class="mb-4 flex justify-end">
-    <button @click="addNew = !addNew" id="add-new-btn"
-            class="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700">
+    <button @click="addNew = !addNew"
+            type="button"
+            class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
       Dodaj
     </button>
   </div>
 
   <!-- Add New Form -->
-  <div v-else id="add-new-form" class="bg-white p-4 rounded-md shadow-md border border-gray-200 mb-6">
-    <h3 class="text-lg font-medium text-gray-700 mb-4">Dodaj nową jednostkę organizacyjną</h3>
-    <form id="form" @submit.prevent="handleSubmit">
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Name Input -->
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700">Nazwa</label>
-          <input
-              v-model="name"
-              type="text"
-              id="name"
-              maxlength="50"
-              class="mt-1 block w-full px-4 py-2 text-gray-700 bg-gray-50 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Nazwa jednostki"
-              required
-          />
+  <div v-else
+       class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700 mb-5">
+    <div class="space-y-6">
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nową jednostkę organizacyjną</h5>
+      <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="text" id="name" v-model="name" maxlength="50"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 placeholder=" " required>
+          <label for="name"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Pełna Nazwa
+          </label>
         </div>
-
-        <!-- Abbreviation Input -->
-        <div>
-          <label for="abbreviation" class="block text-sm font-medium text-gray-700">Skrót</label>
-          <input
-              v-model="abbreviation"
-              type="text"
-              id="abbreviation"
-              maxlength="5"
-              class="mt-1 block w-full px-4 py-2 text-gray-700 bg-gray-50 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              placeholder="skr."
-              required
-          />
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="text" id="abbreviation" v-model="abbreviation" maxlength="5"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 placeholder=" " required>
+          <label for="abbreviation"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Skrót
+          </label>
         </div>
       </div>
-
-      <!-- Submit Button -->
       <div class="mt-4 flex justify-end">
-        <button
-            type="reset"
-            @click="abortAddNew"
-            class="px-4 py-2 ml-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-        >
-          Anuluj
-        </button>
-
-        <button
-            type="submit"
-            class="px-4 py-2 ml-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
+        <button type="button" @click="handleSubmit"
+                class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
           Dodaj
         </button>
-        </div>
-      <div v-if="hasErrors" class="block relative mb-4 mt-4 rounded-lg border border-red-300 bg-red-100 p-4 text-red-700" role="alert">
-          <strong class="font-bold">Błąd: </strong>
-    <span class="block sm:inline">Wystąpił błąd podczas dodawania formy zajęć, spróbuj ponownie</span>
-<!--          <button-->
-<!--              type="button"-->
-<!--              class="absolute top-2 right-2 text-red-700 hover:text-red-900 focus:outline-none"-->
-<!--              aria-label="Close"-->
-<!--              onclick="this.parentElement.remove()"-->
-<!--          >-->
-<!--            ✖-->
-<!--          </button>-->
+        <button type="button" @click="abortAddNew"
+                class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+          Anuluj
+        </button>
       </div>
-    </form>
+    </div>
   </div>
 </template>
 

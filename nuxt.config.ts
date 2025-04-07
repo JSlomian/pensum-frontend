@@ -10,6 +10,11 @@ export default defineNuxtConfig({
         // '@nuxtjs/i18n',
         // './modules/flowbite'
     ],
+    imports: {
+        dirs: [
+            'types/*.d.ts'
+        ]
+    },
     tailwindcss: {
         cssPath: '~/assets/css/input.css'
     },
