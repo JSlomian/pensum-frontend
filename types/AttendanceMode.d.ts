@@ -1,12 +1,12 @@
 declare global {
 
-    type Major = {
+    type AttendanceMode = {
         id: number,
         name: string,
         abbreviation: string
     }
 
-   type MajorCreate = Omit<Major, 'id'>
+   type AttendanceModeCreate = Omit<AttendanceMode, 'id'>
 }
 
 export {}

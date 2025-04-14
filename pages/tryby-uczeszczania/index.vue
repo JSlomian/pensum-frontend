@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const route = '/api/majors'
+const route = '/api/attendance_modes'
 useHead({
-  title: 'Kierunki'
+  title: 'Tryb Uczęszczania'
 })
 
 
@@ -22,28 +22,28 @@ const cancelEdit = (): void => {
 }
 
 const handleDelete = (id: number): void => {
-  let major: AttendanceMode | undefined
+  let mode: AttendanceMode | undefined
   try {
-    major = data.value?.member.find((m: AttendanceMode) => m.id === id);
-    if (!major) {
+    mode = data.value?.member.find((m: AttendanceMode) => m.id === id);
+    if (!mode) {
       showToast('danger', 'Przekazano id do nieistniejącej pozycji');
       modalOpen.value = false
       return
     }
-    callDelete(major.id)
+    callDelete(mode.id)
     modalOpen.value = false
     refresh()
-    showToast('success', `Usunięto ${major.name}`)
+    showToast('success', `Usunięto ${mode.name}`)
   } catch (e) {
     showToast('danger', `Nie udało się usunąć.`)
   }
 }
 
-const handleUpdate = (major: AttendanceMode): void => {
+const handleUpdate = (mode: AttendanceMode): void => {
   try {
-    callUpdate(major)
+    callUpdate(mode)
     handleCancelEdit()
-    showToast('success', `Zaktualizowano ${major.name}`)
+    showToast('success', `Zaktualizowano ${mode.name}`)
   } catch (e) {
     showToast('danger', `Nie udało się zaktualizować.`)
   }
@@ -54,17 +54,17 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const openDeleteModal = (major: AttendanceMode): void => {
+const openDeleteModal = (mode: AttendanceMode): void => {
   modalOpen.value = true
-  deleteId.value = major.id
-  modalText.value = `Czy napewno chcesz usunąć jednostkę <span style="font-weight: bold">${major.name}</span>?`
+  deleteId.value = mode.id
+  modalText.value = `Czy napewno chcesz usunąć jednostkę <span style="font-weight: bold">${mode.name}</span>?`
 }
 </script>
 <template>
   <ModalDelete :open="modalOpen" :text="modalText" @confirm="handleDelete(deleteId)"
                @abort="modalOpen = false"/>
   <div class="container mx-auto p-6 relative overflow-x-auto shadow-md sm:rounded-lg">
-    <AddNewMajor @success="refresh" :route="route"/>
+    <AddNewAttendanceMode @success="refresh" :route="route"/>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table v-if="data?.member && data?.member?.length > 0"
              class="md:table-fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -82,32 +82,32 @@ const openDeleteModal = (major: AttendanceMode): void => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="major in data?.member" :key="major.id"
+        <tr v-for="mode in data?.member" :key="mode.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            <input type="text" v-model="major.name" v-if="editId === major.id" maxlength="255"
+            <input type="text" v-model="mode.name" v-if="editId === mode.id" maxlength="50"
                    class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <span v-else>
-            {{ major.name }}
+            {{ mode.name }}
             </span>
           </th>
           <td class="px-6 py-4">
-            <input type="text" v-model="major.abbreviation" maxlength="10" v-if="editId === major.id"
+            <input type="text" v-model="mode.abbreviation" maxlength="10" v-if="editId === mode.id"
                    class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <span v-else>
-            {{ major.abbreviation }}
+            {{ mode.abbreviation }}
             </span>
           </td>
           <td class="px-6 py-4 text-right">
-            <div v-if="editId === major.id">
-              <span @click="handleUpdate(major)"
+            <div v-if="editId === mode.id">
+              <span @click="handleUpdate(mode)"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Zapisz</span>
               <span @click="handleCancelEdit"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Anuluj</span>
             </div>
             <div v-else>
-              <span @click="editId = major.id" class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>
-              <span @click="openDeleteModal(major)"
+              <span @click="editId = mode.id" class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>
+              <span @click="openDeleteModal(mode)"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Usuń</span>
             </div>
           </td>
@@ -116,7 +116,7 @@ const openDeleteModal = (major: AttendanceMode): void => {
       </table>
     </div>
     <AlertWarning v-if="data?.member && data?.member?.length == 0"
-                  message="Brak dostępnych kierunków, dodaj nowy."/>
+                  message="Brak dostępnych trybów uczęszczania, dodaj nowy."/>
   </div>
 </template>
 

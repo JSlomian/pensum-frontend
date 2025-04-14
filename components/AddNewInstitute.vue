@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const props = defineProps(['route'])
-const name = ref('')
-const abbreviation = ref('')
-const addNew = ref(false)
-const hasErrors = ref(false)
+const name = ref<string>('')
+const abbreviation = ref<string>('')
+const addNew = ref<boolean>(false)
+const hasErrors = ref<boolean>(false)
 const {callPost} = usePost(props.route)
 
 const emit = defineEmits(['success'])
@@ -11,7 +11,7 @@ const emit = defineEmits(['success'])
 
 const handleSubmit = async () => {
   try {
-    await callPost({name: name.value, abbreviation: abbreviation.value} satisfies Institute)
+    await callPost({name: name.value, abbreviation: abbreviation.value} satisfies MajorCreate)
     await showToast("success", `Dodano nową jednostkę ${name.value}`)
     emit('success');
     name.value = ''
@@ -50,7 +50,7 @@ const abortAddNew = () => {
       <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nową jednostkę organizacyjną</h5>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="name" v-model="name" maxlength="50"
+          <input type="text" id="name" v-model="name" maxlength="255"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                  placeholder=" " required>
           <label for="name"
@@ -59,7 +59,7 @@ const abortAddNew = () => {
           </label>
         </div>
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="abbreviation" v-model="abbreviation" maxlength="5"
+          <input type="text" id="abbreviation" v-model="abbreviation" maxlength="10"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                  placeholder=" " required>
           <label for="abbreviation"

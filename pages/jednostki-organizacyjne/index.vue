@@ -4,13 +4,17 @@ useHead({
   title: 'Jednostki Organizacyjne'
 })
 
-const {data, refresh} = await useFetch<{ member: Institute[] }>(route)
+
+const {data, refresh, error, status} = await useFetch<{ member: AttendanceMode[] }>(route)
+
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
 const deleteId = ref<number>(0)
-const modalOpen = ref(false)
-const modalText = ref('')
+const modalOpen = ref<boolean>(false)
+const modalText = ref<string>('')
+
+
 
 
 const cancelEdit = (): void => {
@@ -18,9 +22,9 @@ const cancelEdit = (): void => {
 }
 
 const handleDelete = (id: number): void => {
-  let unit: Institute | undefined; // Declare ct in an outer scope
+  let unit: AttendanceMode | undefined
   try {
-    unit = data.value?.member.find((i: Institute) => i.id === id);
+    unit = data.value?.member.find((i: AttendanceMode) => i.id === id);
     if (!unit) {
       showToast('danger', 'Przekazano id do nieistniejącej pozycji');
       modalOpen.value = false
@@ -35,7 +39,7 @@ const handleDelete = (id: number): void => {
   }
 }
 
-const handleUpdate = (unit: Institute): void => {
+const handleUpdate = (unit: AttendanceMode): void => {
   try {
     callUpdate(unit)
     handleCancelEdit()
@@ -50,7 +54,7 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const openDeleteModal = (unit: Institute): void => {
+const openDeleteModal = (unit: AttendanceMode): void => {
   modalOpen.value = true
   deleteId.value = unit.id
   modalText.value = `Czy napewno chcesz usunąć jednostkę <span style="font-weight: bold">${unit.name}</span>?`

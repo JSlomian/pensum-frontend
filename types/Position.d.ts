@@ -1,11 +1,14 @@
 declare global {
+
     type Position = {
-        id?: number,
+        id: number,
         title: string,
         abbreviation: string,
         description: string,
-        pensum: number
+        pensum: number | null
     }
+
+    type PositionCreate = Omit<Position, 'id'>
 }
 
 export {}

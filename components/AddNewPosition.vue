@@ -1,9 +1,15 @@
 <script setup lang="ts">
 const props = defineProps(['route'])
-const type = ref('')
-const abbreviation = ref('')
-const addNew = ref(false)
-const hasErrors = ref(false)
+
+const position = reactive<PositionCreate>({
+  title: '',
+  description: '',
+  pensum: null,
+  abbreviation: ''
+})
+
+const addNew = ref<boolean>(false)
+const hasErrors = ref<boolean>(false)
 const {callPost} = usePost(props.route)
 
 const emit = defineEmits(['success'])
@@ -11,22 +17,26 @@ const emit = defineEmits(['success'])
 
 const handleSubmit = async () => {
   try {
-    await callPost({type: type.value, abbreviation: abbreviation.value} satisfies Position)
-    await showToast("success", `Dodano nową formę zajęć ${type.value}`)
+    await callPost(position satisfies PositionCreate)
+    await showToast("success", `Dodano nowe stanowisko ${position.title}`)
     emit('success');
-    type.value = ''
-    abbreviation.value = ''
+    position.title = ''
+    position.description = ''
+    position.pensum = null
+    position.abbreviation = ''
     addNew.value = false
     hasErrors.value = false
   } catch (e) {
     hasErrors.value = true
-    await showToast("danger", `Nie udało się dodać ${type.value}`)
+    await showToast("danger", `Nie udało się dodać ${position.title}`)
   }
 }
 
 const abortAddNew = () => {
-  type.value = ''
-  abbreviation.value = ''
+  position.title = ''
+  position.description = ''
+  position.pensum = null
+  position.abbreviation = ''
   addNew.value = false
   hasErrors.value = false
 }
@@ -47,24 +57,44 @@ const abortAddNew = () => {
   <div v-else
        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700 mb-5">
     <div class="space-y-6">
-      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nową formę zajęć</h5>
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nowe stanowisko</h5>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="type" v-model="type" maxlength="50"
+          <input type="text" v-model="position.title" maxlength="255"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                  placeholder=" " required>
-          <label for="type"
+          <label for="title"
                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Pełna Nazwa
+            Tytuł
           </label>
         </div>
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="abbreviation" v-model="abbreviation" maxlength="5"
+          <input type="text" v-model="position.abbreviation" maxlength="30"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                  placeholder=" " required>
           <label for="abbreviation"
                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
             Skrót
+          </label>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="text" v-model="position.description" maxlength="255"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 placeholder=" " required>
+          <label for="title"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Opis
+          </label>
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="number" v-model="position.pensum"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 placeholder=" " required>
+          <label for="abbreviation"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Pensum
           </label>
         </div>
       </div>

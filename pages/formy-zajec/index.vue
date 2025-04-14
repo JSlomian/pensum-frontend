@@ -9,8 +9,8 @@ const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
 const deleteId = ref<number>(0)
-const modalOpen = ref(false)
-const modalText = ref('')
+const modalOpen = ref<boolean>(false)
+const modalText = ref<string>('')
 
 const cancelEdit = (): void => {
   editId.value = 0

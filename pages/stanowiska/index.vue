@@ -4,13 +4,13 @@ useHead({
   title: 'Stanowiska'
 })
 
-const {data, refresh} = await useFetch<{ member: Position[]}>(route)
+const {data, refresh, error} = await useFetch<{ member: Position[]}>(route)
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
 const deleteId = ref<number>(0)
-const modalOpen = ref(false)
-const modalText = ref('')
+const modalOpen = ref<boolean>(false)
+const modalText = ref<string>('')
 
 
 const cancelEdit = (): void => {
@@ -54,7 +54,7 @@ const handleCancelEdit = (): void => {
 const openDeleteModal = (position: Position): void => {
   modalOpen.value = true
   deleteId.value = position.id
-  modalText.value = `Czy napewno chcesz stanowisko <span style="font-weight: bold">${position.title}</span>?`
+  modalText.value = `Czy napewno chcesz usunąć stanowisko <span style="font-weight: bold">${position.title}</span>?`
 }
 </script>
 
@@ -62,17 +62,23 @@ const openDeleteModal = (position: Position): void => {
     <ModalDelete :open="modalOpen" :text="modalText" @confirm="handleDelete(deleteId)"
                @abort="modalOpen = false"/>
   <div class="container mx-auto p-6 relative overflow-x-auto shadow-md sm:rounded-lg">
-    <AddNewInstitute @success="refresh" :route="route"/>
+    <AddNewPosition @success="refresh" :route="route"/>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table v-if="data?.member && data?.member?.length > 0"
              class="md:table-fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-6 py-3">
-            Pełna Nazwa
+            Tytuł
           </th>
           <th scope="col" class="px-6 py-3">
             Skrót
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Opis
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Pensum
           </th>
           <th scope="col" class="px-6 py-3">
             <span class="sr-only">Action</span>
@@ -80,32 +86,44 @@ const openDeleteModal = (position: Position): void => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="unit in data?.member" :key="unit.id"
+        <tr v-for="pos in data?.member" :key="pos.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            <input type="text" v-model="unit.name" v-if="editId === unit.id" maxlength="255"
-                   class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            <span v-else>
-            {{ unit.name }}
+            <textarea v-model="pos.title" maxlength="255" v-if="editId === pos.id" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+            <span v-else class="break-words">
+            {{ pos.title }}
             </span>
           </th>
           <td class="px-6 py-4">
-            <input type="text" v-model="unit.abbreviation" maxlength="10" v-if="editId === unit.id"
+            <input type="text" v-model="pos.abbreviation" maxlength="30" v-if="editId === pos.id"
                    class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <span v-else>
-            {{ unit.abbreviation }}
+            {{ pos.abbreviation }}
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <textarea v-model="pos.description" maxlength="255" v-if="editId === pos.id" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+            <span v-else class="break-words" :title="pos.description">
+            {{ pos.description.substring(0,50) }}<span v-if="pos.description.length > 50">...</span>
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <input type="number" v-model="pos.pensum" maxlength="10" v-if="editId === pos.id"
+                   class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <span v-else>
+            {{ pos.pensum }}
             </span>
           </td>
           <td class="px-6 py-4 text-right">
-            <div v-if="editId === unit.id">
-              <span @click="handleUpdate(unit)"
+            <div v-if="editId === pos.id">
+              <span @click="handleUpdate(pos)"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Zapisz</span>
               <span @click="handleCancelEdit"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Anuluj</span>
             </div>
             <div v-else>
-              <span @click="editId = unit.id" class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>
-              <span @click="openDeleteModal(unit)"
+              <span @click="editId = pos.id" class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>
+              <span @click="openDeleteModal(pos)"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Usuń</span>
             </div>
           </td>
