@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const route = '/api/attendance_modes'
+const route = '/api/education_levels'
 useHead({
-  title: 'Tryb Uczęszczania'
+  title: 'Poziomy Edukacji'
 })
 
 
-const {data, refresh, error, status} = await useFetch<{ member: AttendanceMode[] }>(route)
+const {data, refresh, error, status} = await useFetch<{ member: EducationLevel[] }>(route)
 
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
@@ -22,28 +22,28 @@ const cancelEdit = (): void => {
 }
 
 const handleDelete = (id: number): void => {
-  let mode: AttendanceMode | undefined
+  let el: EducationLevel | undefined
   try {
-    mode = data.value?.member.find((m: AttendanceMode) => m.id === id);
-    if (!mode) {
+    el = data.value?.member.find((el: EducationLevel) => el.id === id);
+    if (!el) {
       showToast('danger', 'Przekazano id do nieistniejącej pozycji');
       modalOpen.value = false
       return
     }
-    callDelete(mode.id)
+    callDelete(el.id)
     modalOpen.value = false
     refresh()
-    showToast('success', `Usunięto ${mode.name}`)
+    showToast('success', `Usunięto ${el.name}`)
   } catch (e) {
     showToast('danger', `Nie udało się usunąć.`)
   }
 }
 
-const handleUpdate = (mode: AttendanceMode): void => {
+const handleUpdate = (el: EducationLevel): void => {
   try {
-    callUpdate(mode)
+    callUpdate(el)
     handleCancelEdit()
-    showToast('success', `Zaktualizowano ${mode.name}`)
+    showToast('success', `Zaktualizowano ${el.name}`)
   } catch (e) {
     showToast('danger', `Nie udało się zaktualizować.`)
   }
@@ -54,10 +54,10 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const openDeleteModal = (mode: AttendanceMode): void => {
+const openDeleteModal = (el: EducationLevel): void => {
   modalOpen.value = true
-  deleteId.value = mode.id
-  modalText.value = `Czy napewno chcesz usunąć tryb uczęszczania <span style="font-weight: bold">${mode.name}</span>?`
+  deleteId.value = el.id
+  modalText.value = `Czy napewno chcesz usunąć poziom edukacji <span style="font-weight: bold">${el.name}</span>?`
 }
 </script>
 <template>
@@ -116,7 +116,7 @@ const openDeleteModal = (mode: AttendanceMode): void => {
       </table>
     </div>
     <AlertWarning v-if="data?.member && data?.member?.length == 0"
-                  message="Brak dostępnych trybów uczęszczania, dodaj nowy."/>
+                  message="Brak dostępnych poziomów edukacji, dodaj nowy."/>
   </div>
 </template>
 

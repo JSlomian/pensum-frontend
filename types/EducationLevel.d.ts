@@ -1,15 +1,14 @@
 declare global {
 
-    type Major = {
+    type EducationLevel = {
         "@id": string,
         "@type": string,
         id: number,
         name: string,
         abbreviation: string
-        institute: Institute | null | string
     }
 
-    type MajorCreate = Omit<Major, 'id' | '@id' | '@type'>
+    type EducationLevelCreate = Omit<EducationLevel, 'id' | '@id' | '@type'>
 }
 
 export {}

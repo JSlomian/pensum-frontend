@@ -11,8 +11,8 @@ const emit = defineEmits(['success'])
 
 const handleSubmit = async () => {
   try {
-    await callPost({name: name.value, abbreviation: abbreviation.value} satisfies InstituteCreate)
-    await showToast("success", `Dodano nową jednostkę ${name.value}`)
+    await callPost({name: name.value, abbreviation: abbreviation.value} satisfies EducationLevelCreate)
+    await showToast("success", `Dodano nowy kierunek ${name.value}`)
     emit('success');
     name.value = ''
     abbreviation.value = ''
@@ -47,10 +47,10 @@ const abortAddNew = () => {
   <div v-else
        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700 mb-5">
     <div class="space-y-6">
-      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nową jednostkę organizacyjną</h5>
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nowy kierunek</h5>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="name" v-model="name" maxlength="255"
+          <input type="text" id="name" v-model="name" maxlength="50"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                  placeholder=" " required>
           <label for="name"

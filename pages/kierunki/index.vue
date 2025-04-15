@@ -1,30 +1,40 @@
 <script setup lang="ts">
 const route = '/api/majors'
+const unitsRoute = '/api/institutes'
 useHead({
   title: 'Kierunki'
 })
 
 
-const {data, refresh, error, status} = await useFetch<{ member: AttendanceMode[] }>(route)
+const {data, refresh, error, status} = await useFetch<{ member: Major[] }>(route)
+const {data: institutes} = await useFetch<{ member: Institute[] }>(unitsRoute)
 
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
+const editUnitIri = ref<string>('')
 const deleteId = ref<number>(0)
 const modalOpen = ref<boolean>(false)
 const modalText = ref<string>('')
 
-
-
+const startEdit = (major: Major) => {
+  editId.value = major.id;
+  if (typeof major.institute === 'string') {
+  editUnitIri.value = major.institute
+  } else {
+  editUnitIri.value = major.institute!['@id']
+  }
+}
 
 const cancelEdit = (): void => {
   editId.value = 0
+  editUnitIri.value = ''
 }
 
 const handleDelete = (id: number): void => {
-  let major: AttendanceMode | undefined
+  let major: Major | undefined
   try {
-    major = data.value?.member.find((m: AttendanceMode) => m.id === id);
+    major = data.value?.member.find((m: Major) => m.id === id);
     if (!major) {
       showToast('danger', 'Przekazano id do nieistniejącej pozycji');
       modalOpen.value = false
@@ -39,9 +49,14 @@ const handleDelete = (id: number): void => {
   }
 }
 
-const handleUpdate = (major: AttendanceMode): void => {
+const handleUpdate = (major: Major): void => {
   try {
-    callUpdate(major)
+    const updatedMajor = {
+      ...major,
+      institute: editUnitIri.value || '',
+    }
+
+    callUpdate(updatedMajor)
     handleCancelEdit()
     showToast('success', `Zaktualizowano ${major.name}`)
   } catch (e) {
@@ -54,11 +69,12 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const openDeleteModal = (major: AttendanceMode): void => {
+const openDeleteModal = (major: Major): void => {
   modalOpen.value = true
   deleteId.value = major.id
-  modalText.value = `Czy napewno chcesz usunąć jednostkę <span style="font-weight: bold">${major.name}</span>?`
+  modalText.value = `Czy napewno chcesz usunąć kierunek <span style="font-weight: bold">${major.name}</span>?`
 }
+
 </script>
 <template>
   <ModalDelete :open="modalOpen" :text="modalText" @confirm="handleDelete(deleteId)"
@@ -75,6 +91,9 @@ const openDeleteModal = (major: AttendanceMode): void => {
           </th>
           <th scope="col" class="px-6 py-3">
             Skrót
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Jednostka
           </th>
           <th scope="col" class="px-6 py-3">
             <span class="sr-only">Action</span>
@@ -98,6 +117,24 @@ const openDeleteModal = (major: AttendanceMode): void => {
             {{ major.abbreviation }}
             </span>
           </td>
+          <td class="px-6 py-4">
+            <select
+                v-if="editId === major.id"
+                v-model="editUnitIri"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option
+                  v-if="institutes?.member && institutes?.member?.length > 0"
+                  v-for="institute in institutes?.member"
+                  :value="institute['@id']"
+                  :key="institute['@id']"
+              >
+                {{ institute.abbreviation }}
+              </option>
+            </select>
+            <span v-else>
+            {{ typeof major.institute === 'object' ? major.institute?.abbreviation : '' }}
+            </span>
+          </td>
           <td class="px-6 py-4 text-right">
             <div v-if="editId === major.id">
               <span @click="handleUpdate(major)"
@@ -106,7 +143,8 @@ const openDeleteModal = (major: AttendanceMode): void => {
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Anuluj</span>
             </div>
             <div v-else>
-              <span @click="editId = major.id" class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>
+              <span @click="startEdit(major)"
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>
               <span @click="openDeleteModal(major)"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Usuń</span>
             </div>

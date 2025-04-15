@@ -1,6 +1,8 @@
 declare global {
 
     type Position = {
+        "@id": string,
+        "@type": string,
         id: number,
         title: string,
         abbreviation: string,
@@ -8,7 +10,7 @@ declare global {
         pensum: number | null
     }
 
-    type PositionCreate = Omit<Position, 'id'>
+    type PositionCreate = Omit<Position, 'id' | '@id' | '@type'>
 }
 
 export {}

@@ -5,7 +5,7 @@ useHead({
 })
 
 
-const {data, refresh, error, status} = await useFetch<{ member: AttendanceMode[] }>(route)
+const {data, refresh, error, status} = await useFetch<{ member: Institute[] }>(route)
 
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
@@ -22,9 +22,9 @@ const cancelEdit = (): void => {
 }
 
 const handleDelete = (id: number): void => {
-  let unit: AttendanceMode | undefined
+  let unit: Institute | undefined
   try {
-    unit = data.value?.member.find((i: AttendanceMode) => i.id === id);
+    unit = data.value?.member.find((i: Institute) => i.id === id);
     if (!unit) {
       showToast('danger', 'Przekazano id do nieistniejącej pozycji');
       modalOpen.value = false
@@ -39,7 +39,7 @@ const handleDelete = (id: number): void => {
   }
 }
 
-const handleUpdate = (unit: AttendanceMode): void => {
+const handleUpdate = (unit: Institute): void => {
   try {
     callUpdate(unit)
     handleCancelEdit()
@@ -54,7 +54,7 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const openDeleteModal = (unit: AttendanceMode): void => {
+const openDeleteModal = (unit: Institute): void => {
   modalOpen.value = true
   deleteId.value = unit.id
   modalText.value = `Czy napewno chcesz usunąć jednostkę <span style="font-weight: bold">${unit.name}</span>?`

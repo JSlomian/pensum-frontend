@@ -1,21 +1,36 @@
 <script setup lang="ts">
+import {string} from "postcss-selector-parser";
+
 const props = defineProps(['route'])
+const unitRoute = '/api/institutes'
+const {data, status} = useFetch<{ member: Institute[] }>(unitRoute)
 const name = ref<string>('')
 const abbreviation = ref<string>('')
+const instituteIri = ref<string>('')
 const addNew = ref<boolean>(false)
 const hasErrors = ref<boolean>(false)
 const {callPost} = usePost(props.route)
 
 const emit = defineEmits(['success'])
 
+onMounted(() => {
+  if (status.value == 'success') {
+    instituteIri.value = data.value!.member[0]['@id']
+  }
+})
 
 const handleSubmit = async () => {
   try {
-    await callPost({name: name.value, abbreviation: abbreviation.value} satisfies MajorCreate)
+    await callPost({
+      name: name.value,
+      abbreviation: abbreviation.value,
+      institute: instituteIri.value
+    } satisfies MajorCreate)
     await showToast("success", `Dodano nowy kierunek ${name.value}`)
     emit('success');
     name.value = ''
     abbreviation.value = ''
+    instituteIri.value = ''
     addNew.value = false
     hasErrors.value = false
   } catch (e) {
@@ -27,6 +42,7 @@ const handleSubmit = async () => {
 const abortAddNew = () => {
   name.value = ''
   abbreviation.value = ''
+  instituteIri.value = ''
   addNew.value = false
   hasErrors.value = false
 }
@@ -66,6 +82,20 @@ const abortAddNew = () => {
                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
             Skrót
           </label>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+          <label for="underline_select" class="sr-only">Wybierz jednostkę</label>
+          <select id="underline_select" v-model="instituteIri" required
+                  class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+            <option
+                v-if="data?.member && data?.member?.length > 0"
+                v-for="(institute, index) in data?.member"
+                :selected="index == 0"
+                :value="institute['@id']">{{ institute.abbreviation }} {{ index }} {{ index == 0 }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="mt-4 flex justify-end">
