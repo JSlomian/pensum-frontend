@@ -22,33 +22,36 @@ export default defineNuxtConfig({
         api_url: 'http://localhost:8000'
     },
     auth: {
-        globalAppMiddleware: false,
+        globalAppMiddleware: true,
         isEnabled: true,
-        disableServerSideAuth: false,
-        // secret: "68767b88d5e3df412d72f2376044f02b6fb91028c264b53e12ba816a20fbcd1c",
-        baseURL: 'http://localhost:8000/login_check',
+        baseURL: '/api',
+        originEnvKey: 'NUXT_PUBLIC_API_URL',
         provider: {
             type: 'local',
+            endpoints: {
+                signIn: {path: '/login_check', method: 'post'},
+                signOut: {path: '/logout', method: 'post'},
+                signUp: false,
+                getSession: {path: '/api/profile', method: 'get'}
+            },
+
             token: {
                 signInResponseTokenPointer: '/token',
-                type: 'Bearer',
-                // cookieName: 'token',
-                // headerName: 'Authorization',
-                // maxAgeInSeconds: 1800,
-                // sameSiteAttribute: 'lax',
-                // cookieDomain: 'localhost',
-                // secureCookieAttribute: false,
-                // httpOnlyCookieAttribute: false,
+                maxAgeInSeconds: 3600
+            },
+
+            refresh: {
+                isEnabled: false,
+                // endpoint: {path: '/api/token/refresh', method: 'post'},
+                // token: {
+                //     signInResponseRefreshTokenPointer: '/refresh_token'
+                // }
             }
-        },
-        // sessionRefresh: {
-        //     enablePeriodically: true,
-        //     enableOnWindowFocus: true,
-        // },
+        }
     },
     plugins: [
         {
-            src: 'plugins/flowbite.client.js', mode: 'client'
+            src: 'plugins/flowbite.client.js'
         }],
     // i18n: {
     //     locales: ['pl', 'en'],

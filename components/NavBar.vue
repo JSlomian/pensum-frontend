@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TheSignOut from "~/components/TheSignOut.vue";
 </script>
 
 <template>
@@ -6,16 +7,13 @@
 
   <nav class="bg-white border-gray-200 dark:bg-gray-900">
     <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
-      <a href="https://flowbite.com" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <NuxtLink to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img class="w-[100px] h-auto p-1" src="/logo.svg" style="background: aliceblue"
              alt="Logo UPSL">
         <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Pensum</span>
-      </a>
+      </NuxtLink>
       <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
-        <NuxtLink href="/login"
-                  class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 md:px-5 md:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
-          Zaloguj
-        </NuxtLink>
+        <TheSignOut />
         <!--        <a href="#"-->
         <!--           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 md:px-5 md:py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Sign-->
         <!--          up</a>-->

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {string} from "postcss-selector-parser";
-
 const props = defineProps(['route'])
 const unitRoute = '/api/institutes'
 const {data, status} = useFetch<{ member: Institute[] }>(unitRoute)
