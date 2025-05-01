@@ -19,25 +19,31 @@ export default defineNuxtConfig({
         cssPath: '~/assets/css/input.css'
     },
     runtimeConfig: {
-        api_url: 'http://localhost:8000'
+        api_url: 'https://localhost:8000'
     },
     auth: {
         globalAppMiddleware: true,
         isEnabled: true,
-        baseURL: '/api',
+        baseURL: 'https://localhost:8000',
         originEnvKey: 'NUXT_PUBLIC_API_URL',
         provider: {
             type: 'local',
             endpoints: {
                 signIn: {path: '/login_check', method: 'post'},
-                signOut: {path: '/logout', method: 'post'},
+                signOut: false,
                 signUp: false,
-                getSession: {path: '/api/profile', method: 'get'}
+                getSession: {path: '/profile', method: 'get'}
             },
-
             token: {
                 signInResponseTokenPointer: '/token',
-                maxAgeInSeconds: 3600
+                type: 'Bearer',
+                headerName: 'Authorization',
+                maxAgeInSeconds: 3600,
+                cookieName: 'auth.token',
+                sameSiteAttribute: 'lax',     // allow cookie on same-site navigations & top-level POSTs :contentReference[oaicite:0]{index=0}
+                cookieDomain: 'localhost',
+                secureCookieAttribute: false,     // in dev over HTTP
+                httpOnlyCookieAttribute: false,
             },
 
             refresh: {

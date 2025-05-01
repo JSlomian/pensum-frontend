@@ -13,12 +13,20 @@ export default defineEventHandler(async (event) => {
         body = await readBody(event);
     }
 
+    const token = getCookie(event, 'auth.token')
+    const outHeaders: Record<string, string> = {
+        ...(event.node.req.headers as Record<string, string>)
+    }
+    if (token) {
+        outHeaders.Authorization = `Bearer ${token}`
+    }
+
     try {
         return await $fetch(`${api_url}${path}`, {
             method,
             query: queryParams,
             body,
-            headers: event.node.req.headers as Record<string, string>
+            headers: outHeaders
         })
     } catch (error: any) {
         console.error('Proxy error:', error);

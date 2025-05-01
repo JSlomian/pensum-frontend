@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const route = '/api/majors'
+const route =  '/api/majors'
 const unitsRoute = '/api/institutes'
 useHead({
   title: 'Kierunki'

@@ -12,12 +12,14 @@ const password = ref("")
 const error = ref("")
 
 const handleSubmit = async () => {
+
   try {
     await auth.signIn({
           email: email.value,
           password: password.value
         },
-        {callbackUrl: '/'})
+        {callbackUrl: '/'}
+    )
   } catch (e: any) {
     error.value = e?.message || 'Login failed'
   }
