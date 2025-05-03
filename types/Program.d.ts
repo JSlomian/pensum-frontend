@@ -6,11 +6,11 @@ declare global {
         id: number,
         planYear: Date,
         semester: number,
-        programsInMajors: ProgramInMajor[],
-        subjectsInPrograms: SubjectInPrograms[]
+        programsInMajors: ProgramInMajor[] | string,
+        subjectsInPrograms: SubjectInProgram[]
     }
 
-    type ProgramCreate = Omit<Program, 'id' | '@id' | '@type' | 'programsInMajors' | 'subjectsInPrograms'>
+    type ProgramCreate = Omit<Program, 'id' | '@id' | '@type' | 'subjectsInPrograms'>
 }
 
 export {}

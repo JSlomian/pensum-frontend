@@ -77,10 +77,10 @@ const openDeleteModal = (position: Position): void => {
           <th scope="col" class="px-6 py-3">
             Opis
           </th>
-          <th scope="col" class="px-6 py-3">
+          <th scope="col" class="px-6 py-3 w-24">
             Pensum
           </th>
-          <th scope="col" class="px-6 py-3">
+          <th scope="col" class="px-6 py-3 w-36">
             <span class="sr-only">Action</span>
           </th>
         </tr>

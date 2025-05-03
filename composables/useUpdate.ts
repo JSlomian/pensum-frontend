@@ -3,7 +3,7 @@ export const useUpdate = (route: string) => {
         route = route + '/'
     }
     const callUpdate = async ({id, ...rest}: { id: number; [key: string]: any }) => {
-        await $fetch(`${route}${id}`, {
+        return await $fetch(`${route}${id}`, {
             method: 'PATCH',
             headers: {
                 'accept': 'application/ld+json',

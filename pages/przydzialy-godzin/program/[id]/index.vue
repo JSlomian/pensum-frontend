@@ -1,11 +1,13 @@
 <script setup lang="ts">
-const route =  '/api/majors'
+const routeString = useRoute()
+const id = routeString.params.id
+const route =  `/api/programs_in_majors/${id}`
 useHead({
   title: 'Kierunki'
 })
 
 
-const {data, refresh, error, status} = await useFetch<{ member: Major[] }>(route)
+const {data, refresh, error, status} = await useFetch<{ member: Program[] }>(route)
 
 </script>
 <template>

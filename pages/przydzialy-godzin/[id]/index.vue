@@ -1,11 +1,13 @@
 <script setup lang="ts">
-const route =  '/api/majors'
+const routeString = useRoute()
+const id = routeString.params.id
+const route =  `/api/programs_in_majors?major.id=${id}`
 useHead({
   title: 'Kierunki'
 })
 
 
-const {data, refresh, error, status} = await useFetch<{ member: Major[] }>(route)
+const {data, refresh, error, status} = await useFetch<{ member: ProgramInMajor[] }>(route)
 
 </script>
 <template>
@@ -16,13 +18,13 @@ const {data, refresh, error, status} = await useFetch<{ member: Major[] }>(route
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
           <th scope="col" class="px-6 py-3">
-            Pełna Nazwa
+            Kierunek
           </th>
           <th scope="col" class="px-6 py-3">
-            Skrót
+            Poziom edukacji
           </th>
           <th scope="col" class="px-6 py-3">
-            Jednostka
+            Tryb uczęszczania
           </th>
           <th scope="col" class="px-6 py-3">
             <span class="sr-only">Action</span>
@@ -30,26 +32,26 @@ const {data, refresh, error, status} = await useFetch<{ member: Major[] }>(route
         </tr>
         </thead>
         <tbody>
-        <tr v-for="major in data?.member" :key="major.id"
+        <tr v-for="pim in data?.member" :key="pim.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
             <span>
-            {{ major.name }}
+            {{ pim.major.name }}
             </span>
           </th>
           <td class="px-6 py-4">
             <span>
-            {{ major.abbreviation }}
+            {{ pim.educationLevel.name }}
             </span>
           </td>
           <td class="px-6 py-4">
             <span>
-            {{ typeof major.institute === 'object' ? major.institute?.abbreviation : '' }}
+            {{ pim.attendanceMode.name }}
             </span>
           </td>
           <td class="px-6 py-4 text-right">
             <div>
-              <NuxtLink :to="`/przydzialy-godzin/${major.id}`"
+              <NuxtLink :to="`/przydzialy-godzin/program/${pim.id}`"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Wybierz</NuxtLink>
             </div>
           </td>

@@ -4,7 +4,7 @@ export const useDelete = (route: string) => {
     }
   const callDelete = async (id: number) =>
   {
-      await $fetch(`${route}${id}`, {
+      return await $fetch(`${route}${id}`, {
           method: 'DELETE'
       })
   }

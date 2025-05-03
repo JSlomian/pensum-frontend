@@ -7,6 +7,7 @@ declare global {
         name: string,
         abbreviation: string
         institute: Institute | null | string
+        programInMajor: ProgramInMajor | undefined
     }
 
     type MajorCreate = Omit<Major, 'id' | '@id' | '@type'>

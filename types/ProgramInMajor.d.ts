@@ -4,8 +4,9 @@ declare global {
         "@id": string,
         "@type": string,
         id: number,
-        name: string,
-        abbreviation: string
+        major: Major | string,
+        educationLevel: EducationLevel | string,
+        attendanceMode: AttendanceMode | string
     }
 
     type ProgramInMajorCreate = Omit<ProgramInMajor, 'id' | '@id' | '@type'>

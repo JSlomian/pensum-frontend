@@ -28,7 +28,7 @@ const handleSubmit = async () => {
     emit('success');
     name.value = ''
     abbreviation.value = ''
-    instituteIri.value = ''
+    instituteIri.value = data.value!.member[0]['@id']
     addNew.value = false
     hasErrors.value = false
   } catch (e) {
@@ -40,7 +40,7 @@ const handleSubmit = async () => {
 const abortAddNew = () => {
   name.value = ''
   abbreviation.value = ''
-  instituteIri.value = ''
+  instituteIri.value = data.value!.member[0]['@id']
   addNew.value = false
   hasErrors.value = false
 }
@@ -90,8 +90,8 @@ const abortAddNew = () => {
             <option
                 v-if="data?.member && data?.member?.length > 0"
                 v-for="(institute, index) in data?.member"
-                :selected="index == 0"
-                :value="institute['@id']">{{ institute.abbreviation }} {{ index }} {{ index == 0 }}
+                :key="institute['@id']"
+                :value="institute['@id']">{{ institute.abbreviation }}
             </option>
           </select>
         </div>
