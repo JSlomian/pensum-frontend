@@ -45,13 +45,20 @@ export default defineNuxtConfig({
                 secureCookieAttribute: false,     // in dev over HTTP
                 httpOnlyCookieAttribute: false,
             },
-
             refresh: {
                 isEnabled: false,
                 // endpoint: {path: '/api/token/refresh', method: 'post'},
                 // token: {
                 //     signInResponseRefreshTokenPointer: '/refresh_token'
                 // }
+            },
+            session: {
+                dataType: {
+                    id: 'number',
+                    username: 'string',
+                    email: 'string',
+                    roles: 'array'
+                },
             }
         }
     },

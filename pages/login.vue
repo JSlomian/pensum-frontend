@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const auth = useAuth()
+
+import {catchClause} from "@babel/types";
+
+const {signIn} = useAuth()
+const router = useRouter()
 definePageMeta({
   layout: 'login',
   auth: {
@@ -12,16 +16,22 @@ const password = ref("")
 const error = ref("")
 
 const handleSubmit = async () => {
-
   try {
-    await auth.signIn({
+    const res = await signIn({
           email: email.value,
           password: password.value
         },
-        {callbackUrl: '/'}
+        {
+          redirect: false
+        }
     )
-  } catch (e: any) {
-    error.value = e?.message || 'Login failed'
+    await router.push('/')
+  } catch (err: any) {
+    let apiError = 'Nie udało się zalogować'
+    if (err.response.status === 401) {
+      apiError = apiError + ', nieprawidłowe hasło lub login.'
+    }
+    await showToast('danger', apiError)
   }
 }
 

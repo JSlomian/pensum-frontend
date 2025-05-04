@@ -1,82 +1,82 @@
 <script setup lang="ts">
-const route = '/api/programs'
-// const pimsRoute = '/api/programs_in_majors'
-// const educationLevelsRoute = '/api/education_levels'
-// const attendanceModesRoute = '/api/attendance_modes'
+const route = '/api/programs_in_majors'
+const majorsRoute = '/api/majors'
+const educationLevelsRoute = '/api/education_levels'
+const attendanceModesRoute = '/api/attendance_modes'
 useHead({
   title: 'Programy'
 })
 
 
-const {data, refresh, error, status} = await useFetch<{ member: Program[] }>(route)
-// const {data: major} = await useFetch<{ member: Major[] }>(majorsRoute)
-// const {data: educationLevel} = await useFetch<{ member: EducationLevel[] }>(educationLevelsRoute)
-// const {data: attendanceMode} = await useFetch<{ member: AttendanceMode[] }>(attendanceModesRoute)
+const {data, refresh, error, status} = await useFetch<{ member: ProgramInMajor[] }>(route)
+const {data: major} = await useFetch<{ member: Major[] }>(majorsRoute)
+const {data: educationLevel} = await useFetch<{ member: EducationLevel[] }>(educationLevelsRoute)
+const {data: attendanceMode} = await useFetch<{ member: AttendanceMode[] }>(attendanceModesRoute)
 
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
-// const editMajorIri = ref<string>('')
-// const editEducationLevelIri = ref<string>('')
-// const editAttendanceModeIri = ref<string>('')
+const editMajorIri = ref<string>('')
+const editEducationLevelIri = ref<string>('')
+const editAttendanceModeIri = ref<string>('')
 const deleteId = ref<number>(0)
 const modalOpen = ref<boolean>(false)
 const modalText = ref<string>('')
 
-const startEdit = (prog: Program) => {
-  editId.value = prog.id;
-  // if (typeof pim.major === 'string') {
-  //   editMajorIri.value = pim.major
-  // } else {
-  //   editMajorIri.value = pim.major!['@id']
-  // }
-  // if (typeof pim.educationLevel === 'string') {
-  //   editEducationLevelIri.value = pim.educationLevel
-  // } else {
-  //   editEducationLevelIri.value = pim.educationLevel!['@id']
-  // }
-  // if (typeof pim.attendanceMode === 'string') {
-  //   editAttendanceModeIri.value = pim.attendanceMode
-  // } else {
-  //   editAttendanceModeIri.value = pim.attendanceMode!['@id']
-  // }
+const startEdit = (pim: ProgramInMajor) => {
+  editId.value = pim.id;
+  if (typeof pim.major === 'string') {
+    editMajorIri.value = pim.major
+  } else {
+    editMajorIri.value = pim.major!['@id']
+  }
+  if (typeof pim.educationLevel === 'string') {
+    editEducationLevelIri.value = pim.educationLevel
+  } else {
+    editEducationLevelIri.value = pim.educationLevel!['@id']
+  }
+  if (typeof pim.attendanceMode === 'string') {
+    editAttendanceModeIri.value = pim.attendanceMode
+  } else {
+    editAttendanceModeIri.value = pim.attendanceMode!['@id']
+  }
 }
 
 const cancelEdit = (): void => {
   editId.value = 0
-  // editMajorIri.value = ''
-  // editEducationLevelIri.value = ''
-  // editAttendanceModeIri.value = ''
+  editMajorIri.value = ''
+  editEducationLevelIri.value = ''
+  editAttendanceModeIri.value = ''
 }
 
 const handleDelete = (id: number): void => {
-  let prog: Program | undefined
+  let pim: ProgramInMajor | undefined
   try {
-    prog = data.value?.member.find((m: Program) => m.id === id);
-    if (!prog) {
+    pim = data.value?.member.find((m: ProgramInMajor) => m.id === id);
+    if (!pim) {
       showToast('danger', 'Przekazano id do nieistniejącej pozycji');
       modalOpen.value = false
       return
     }
-    callDelete(prog.id)
+    callDelete(pim.id)
     modalOpen.value = false
     refresh()
-    showToast('success', `Usunięto ${prog.id}`)
+    showToast('success', `Usunięto ${pim.id}`)
   } catch (e) {
     showToast('danger', `Nie udało się usunąć.`)
   }
 }
 
-const handleUpdate = (prog: Program): void => {
+const handleUpdate = (pim: ProgramInMajor): void => {
   try {
-    // const updatedPim = {
-    //   ...pim,
-    //   major: editMajorIri.value || '',
-    //   attendanceMode: editAttendanceModeIri || '',
-    //   educationLevel: editEducationLevelIri || ''
-    // }
+    const updatedPim = {
+      ...pim,
+      major: editMajorIri.value || '',
+      attendanceMode: editAttendanceModeIri || '',
+      educationLevel: editEducationLevelIri || ''
+    }
 
-    callUpdate(prog)
+    callUpdate(updatedPim)
     handleCancelEdit()
     showToast('success', `Zaktualizowano`)
   } catch (e) {
@@ -89,19 +89,19 @@ const handleCancelEdit = (): void => {
   refresh()
 }
 
-const openDeleteModal = (prog: Program): void => {
+const openDeleteModal = (pim: ProgramInMajor): void => {
   modalOpen.value = true
-  deleteId.value = prog.id
-  modalText.value = `Czy napewno chcesz usunąć program <span style="font-weight: bold">${prog.id}</span>?`
+  deleteId.value = pim.id
+  modalText.value = `Czy napewno chcesz usunąć program <span style="font-weight: bold">${pim.major.name} ${pim.attendanceMode.abbreviation}</span>?`
 }
 
-// const requiredFilled = computed(() => {
-//   return (
-//       major.value?.member?.length > 0 &&
-//       educationLevel.value?.member?.length > 0 &&
-//       attendanceMode.value?.member?.length > 0
-//   )
-// })
+const requiredFilled = computed(() => {
+  return (
+      major.value?.member?.length > 0 &&
+      educationLevel.value?.member?.length > 0 &&
+      attendanceMode.value?.member?.length > 0
+  )
+})
 
 </script>
 <template>
@@ -120,10 +120,10 @@ const openDeleteModal = (prog: Program): void => {
             Kierunek
           </th>
           <th scope="col" class="px-6 py-3">
-            Rok
+            Poziom edukacji
           </th>
           <th scope="col" class="px-6 py-3">
-            Semestr
+            Tryb uczęszczania
           </th>
           <th scope="col" class="px-6 py-3">
             <span class="sr-only">Action</span>
@@ -131,7 +131,7 @@ const openDeleteModal = (prog: Program): void => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="prog in data?.member" :key="prog.id"
+        <tr v-for="pim in data?.member" :key="pim.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
 

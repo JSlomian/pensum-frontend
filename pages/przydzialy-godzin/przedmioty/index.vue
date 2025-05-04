@@ -1,19 +1,14 @@
 <script setup lang="ts">
 const routeString = useRoute()
 const id = routeString.params.id
-const route = `/api/programs?programInMajors.id=${id}`
-const subjectRoute = `/api/subjects`
+const route =  `/api/subject_in_program?program.id=${id}`
+const subjectsInProgramRoute = ''
 useHead({
   title: 'Kierunki'
 })
-const year = ref<number>(new Date().getFullYear())
-console.log(year.value)
 
 
 const {data, refresh, error, status} = await useFetch<{ member: Program[] }>(route)
-const {data: subjects} = await useFetch<{ member: Subject[] }>(subjectRoute)
-
-const programsForYear = ''
 
 </script>
 <template>
@@ -52,14 +47,13 @@ const programsForYear = ''
           </td>
           <td class="px-6 py-4">
             <span>
-              {{ prog.planYear }}
+            {{ prog.planYear }}
             </span>
           </td>
           <td class="px-6 py-4 text-right">
             <div>
               <NuxtLink :to="`/przydzialy-godzin/przedmioty/${prog.id}`"
-                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Wybierz
-              </NuxtLink>
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Wybierz</NuxtLink>
             </div>
           </td>
         </tr>
@@ -67,7 +61,7 @@ const programsForYear = ''
       </table>
     </div>
     <AlertWarning v-if="data?.member && data?.member?.length == 0"
-                  message="Brak dostępnych programów, dodaj nowy."/>
+                  message="Brak dostępnych kierunków, dodaj nowy."/>
   </div>
 </template>
 

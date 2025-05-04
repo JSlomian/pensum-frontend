@@ -1,10 +1,12 @@
 <script setup lang="ts">
 const routeString = useRoute()
 const id = routeString.params.id
-const route =  `/api/programs_in_majors?major.id=${id}`
+const route = `/api/programs_in_majors?major.id=${id}`
 useHead({
   title: 'Kierunki'
 })
+const {data: user} = useAuth()
+console.log(user)
 
 
 const {data, refresh, error, status} = await useFetch<{ member: ProgramInMajor[] }>(route)
@@ -12,6 +14,13 @@ const {data, refresh, error, status} = await useFetch<{ member: ProgramInMajor[]
 </script>
 <template>
   <div class="container mx-auto p-6 relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div class="mb-4 flex justify-end">
+      <NuxtLink to="/programy-na-kierunkach"
+                type="button"
+                class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+        Edycja programów na kierunkach
+      </NuxtLink>
+    </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table v-if="data?.member && data?.member?.length > 0"
              class="md:table-fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -52,7 +61,8 @@ const {data, refresh, error, status} = await useFetch<{ member: ProgramInMajor[]
           <td class="px-6 py-4 text-right">
             <div>
               <NuxtLink :to="`/przydzialy-godzin/program/${pim.id}`"
-                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Wybierz</NuxtLink>
+                        class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Wybierz
+              </NuxtLink>
             </div>
           </td>
         </tr>
