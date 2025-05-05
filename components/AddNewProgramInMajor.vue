@@ -40,9 +40,9 @@ const handleSubmit = async () => {
     } satisfies ProgramInMajorCreate)
     if (res.statusCode) {
       hasErrors.value = true
-      await showToast("danger", `Nie udało się dodać`)
+      await showToast("danger", `Nie udało się dodać.`)
       if (res.statusCode === 422) {
-        await showToast("danger", `Taka kombinacja już istnieje`)
+        await showToast("danger", `Taka kombinacja już istnieje.`)
       }
     } else {
       await showToast("success", `Dodano nowy program.`)
@@ -90,7 +90,7 @@ const abortAddNew = () => {
                   class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
             <option
                 v-if="major?.member && major?.member?.length > 0"
-                v-for="maj in major?.member"
+                v-for="maj in major?.member as Major[]"
                 :key="maj['@id']"
                 :value="maj['@id']">{{ maj.name }}
             </option>
@@ -116,7 +116,7 @@ const abortAddNew = () => {
                   class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
             <option
                 v-if="attendanceMode?.member && attendanceMode?.member?.length > 0"
-                v-for="am in attendanceMode?.member"
+                v-for="am in attendanceMode?.member as AttendanceMode[]"
                 :key="am['@id']"
                 :value="am['@id']">{{ am.name }}
             </option>

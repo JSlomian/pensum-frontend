@@ -101,7 +101,7 @@ const openDeleteModal = (major: Major): void => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="major in data?.member" :key="major.id"
+        <tr v-for="major in data?.member as Major[]" :key="major.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
             <input type="text" v-model="major.name" v-if="editId === major.id" maxlength="255"

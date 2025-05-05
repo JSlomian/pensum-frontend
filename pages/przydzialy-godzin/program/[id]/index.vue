@@ -2,18 +2,19 @@
 const routeString = useRoute()
 const id = routeString.params.id
 const route = `/api/programs?programInMajors.id=${id}`
-const subjectRoute = `/api/subjects`
 useHead({
-  title: 'Kierunki'
+  title: 'program'
 })
 const year = ref<number>(new Date().getFullYear())
-console.log(year.value)
 
 
 const {data, refresh, error, status} = await useFetch<{ member: Program[] }>(route)
-const {data: subjects} = await useFetch<{ member: Subject[] }>(subjectRoute)
 
-const programsForYear = ''
+const getSubjects = computed( async (programId) => {
+const subjectRoute = `/api/subjects_in_program?program.id=${programId}`
+const {data: subjects} = await useFetch<{ member: Subject[] }>(subjectRoute)
+  return subjects
+})
 
 </script>
 <template>

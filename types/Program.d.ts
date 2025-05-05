@@ -4,13 +4,16 @@ declare global {
         "@id": string,
         "@type": string,
         id: number,
-        planYear: Date,
+        planYear: number,
         semester: number,
-        programsInMajors: ProgramInMajor[] | string,
+        programInMajors: ProgramInMajor,
         subjectsInPrograms: SubjectInProgram[]
     }
 
-    type ProgramCreate = Omit<Program, 'id' | '@id' | '@type' | 'subjectsInPrograms'>
+    type ProgramCreate = Omit<Program, 'id' | '@id' | '@type' | 'subjectsInPrograms' | 'programInMajors'>
+    & {
+        programInMajors: string
+    }
 }
 
 export {}

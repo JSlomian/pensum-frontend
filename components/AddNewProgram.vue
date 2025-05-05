@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps(['route'])
-const unitRoute = '/api/institutes'
-const {data, status} = useFetch<{ member: Institute[] }>(unitRoute)
-const name = ref<string>('')
-const abbreviation = ref<string>('')
-const instituteIri = ref<string>('')
+const pimsRoute = '/api/programs_in_majors'
+const {data: pims, status: pimStatus} = await useFetch<{ member: ProgramInMajor[] }>(pimsRoute)
+const pimIri = ref<string>('')
+const planYear = ref<number>(new Date().getFullYear())
+const semester = ref<number>(1)
 const addNew = ref<boolean>(false)
 const hasErrors = ref<boolean>(false)
 const {callPost} = usePost(props.route)
@@ -12,35 +12,38 @@ const {callPost} = usePost(props.route)
 const emit = defineEmits(['success'])
 
 onMounted(() => {
-  if (status.value == 'success') {
-    instituteIri.value = data.value!.member[0]['@id']
+  if (pimStatus.value == 'success') {
+    pimIri.value = pims.value!.member[0]['@id']
   }
 })
 
 const handleSubmit = async () => {
   try {
-    await callPost({
-      name: name.value,
-      abbreviation: abbreviation.value,
-      institute: instituteIri.value
-    } satisfies MajorCreate)
-    await showToast("success", `Dodano nowy kierunek ${name.value}`)
-    emit('success');
-    name.value = ''
-    abbreviation.value = ''
-    instituteIri.value = data.value!.member[0]['@id']
+    let res = await callPost({
+      programInMajors: pimIri.value,
+      semester: semester.value,
+      planYear: planYear.value,
+    } satisfies ProgramCreate)
+    if (res.statusCode) {
+      hasErrors.value = true
+      await showToast("danger", `Nie udało się dodać.`)
+      if (res.statusCode === 422) {
+        await showToast("danger", `Taka kombinacja już istnieje.`)
+      }
+    } else {
+      await showToast("success", `Dodano nowy program.`)
+      emit('success');
+    }
+    pimIri.value = pims.value!.member[0]['@id']
     addNew.value = false
     hasErrors.value = false
   } catch (e) {
-    hasErrors.value = true
-    await showToast("danger", `Nie udało się dodać ${name.value}`)
+
   }
 }
 
 const abortAddNew = () => {
-  name.value = ''
-  abbreviation.value = ''
-  instituteIri.value = data.value!.member[0]['@id']
+  pimIri.value = pims.value!.member[0]['@id']
   addNew.value = false
   hasErrors.value = false
 }
@@ -61,39 +64,39 @@ const abortAddNew = () => {
   <div v-else
        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700 mb-5">
     <div class="space-y-6">
-      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nowy kierunek</h5>
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nowy program</h5>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="name" v-model="name" maxlength="255"
-                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                 placeholder=" " required>
-          <label for="name"
-                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Pełna Nazwa
-          </label>
+          <label for="underline_select" class="sr-only">Wybierz program na kierunku</label>
+          <select id="underline_select" v-model="pimIri" required
+                  class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+            <option
+                v-if="pims?.member && pims?.member?.length > 0"
+                v-for="pim in pims?.member as ProgramInMajor[]"
+                :key="pim['@id']"
+                :value="pim['@id']">{{ pim.major.name }}-{{ pim.educationLevel.abbreviation }}-{{ pim.attendanceMode.abbreviation }}
+            </option>
+          </select>
         </div>
         <div class="relative z-0 w-full mb-5 group">
-          <input type="text" id="abbreviation" v-model="abbreviation" maxlength="10"
+          <input type="number" v-model="planYear"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                 placeholder=" " required>
-          <label for="abbreviation"
+                 placeholder=" " required min="1980" max="2100">
+          <label for="planYear"
                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Skrót
+            Rok
           </label>
         </div>
       </div>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative z-0 w-full mb-5 group">
-          <label for="underline_select" class="sr-only">Wybierz jednostkę</label>
-          <select id="underline_select" v-model="instituteIri" required
-                  class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-            <option
-                v-if="data?.member && data?.member?.length > 0"
-                v-for="(institute, index) in data?.member as Institute[]"
-                :key="institute['@id']"
-                :value="institute['@id']">{{ institute.abbreviation }}
-            </option>
-          </select>
+          <input type="number" v-model="semester"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 placeholder=" " required min="1" max="10">
+          <label for="planYear"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Semestr
+          </label>
         </div>
       </div>
       <div class="mt-4 flex justify-end">

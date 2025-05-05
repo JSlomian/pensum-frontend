@@ -6,11 +6,14 @@ declare global {
         id: number,
         name: string,
         abbreviation: string
-        institute: Institute | null | string
-        programInMajor: ProgramInMajor | undefined
+        institute: Institute
+        // programInMajor: ProgramInMajor | undefined
     }
 
-    type MajorCreate = Omit<Major, 'id' | '@id' | '@type'>
+    type MajorCreate = Omit<Major, 'id' | '@id' | '@type' | 'institute'>
+    & {
+        institute: string
+    }
 }
 
 export {}

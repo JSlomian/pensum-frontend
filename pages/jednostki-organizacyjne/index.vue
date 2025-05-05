@@ -82,7 +82,7 @@ const openDeleteModal = (unit: Institute): void => {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="unit in data?.member" :key="unit.id"
+        <tr v-for="unit in data?.member as Institute[]" :key="unit.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
             <input type="text" v-model="unit.name" v-if="editId === unit.id" maxlength="255"
