@@ -199,8 +199,8 @@ const requiredFilled = computed(() => {
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Anuluj</span>
             </div>
             <div v-else>
-<!--                      <span @click="startEdit(pim)"-->
-<!--                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Edytuj</span>-->
+<!--                      <NuxtLink :to="`/programy/${pim.id}`"-->
+<!--                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Dodaj program</NuxtLink>-->
               <span @click="openDeleteModal(pim)"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Usuń</span>
             </div>

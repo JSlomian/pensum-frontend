@@ -4,6 +4,7 @@ const pimsRoute = '/api/programs_in_majors'
 const {data: pims, status: pimStatus} = await useFetch<{ member: ProgramInMajor[] }>(pimsRoute)
 const pimIri = ref<string>('')
 const planYear = ref<number>(new Date().getFullYear())
+const syllabusYear = ref<number>(new Date().getFullYear())
 const semester = ref<number>(1)
 const addNew = ref<boolean>(false)
 const hasErrors = ref<boolean>(false)
@@ -23,6 +24,7 @@ const handleSubmit = async () => {
       programInMajors: pimIri.value,
       semester: semester.value,
       planYear: planYear.value,
+      syllabusYear: syllabusYear.value
     } satisfies ProgramCreate)
     if (res.statusCode) {
       hasErrors.value = true
@@ -63,7 +65,7 @@ const abortAddNew = () => {
   <!-- Add New Form -->
   <div v-else
        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700 mb-5">
-    <div class="space-y-6">
+    <form @submit.prevent="handleSubmit" class="space-y-6">
       <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nowy program</h5>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="relative z-0 w-full mb-5 group">
@@ -74,33 +76,60 @@ const abortAddNew = () => {
                 v-if="pims?.member && pims?.member?.length > 0"
                 v-for="pim in pims?.member as ProgramInMajor[]"
                 :key="pim['@id']"
-                :value="pim['@id']">{{ pim.major.name }}-{{ pim.educationLevel.abbreviation }}-{{ pim.attendanceMode.abbreviation }}
+                :value="pim['@id']">{{ pim.major.name }}-{{
+                pim.educationLevel.abbreviation
+              }}-{{ pim.attendanceMode.abbreviation }}
             </option>
           </select>
         </div>
         <div class="relative z-0 w-full mb-5 group">
-          <input type="number" v-model="planYear"
-                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                 placeholder=" " required min="1980" max="2100">
-          <label for="planYear"
-                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Rok
-          </label>
-        </div>
-      </div>
-      <div class="grid md:grid-cols-2 md:gap-6">
-        <div class="relative z-0 w-full mb-5 group">
+
           <input type="number" v-model="semester"
                  class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                 placeholder=" " required min="1" max="10">
-          <label for="planYear"
+                 placeholder=" " required min="1" max="10"
+                 @keydown.e.prevent
+                 @keydown.E.prevent
+                 @keydown.plus.prevent
+                 @keydown.minus.prevent
+                 @keydown.dot.prevent>
+          <label for="semester"
                  class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
             Semestr
           </label>
         </div>
       </div>
+      <div class="grid md:grid-cols-2 md:gap-6">
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="number" :value="planYear"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 required :min="1980" :max="2100" step="1"
+                 @keydown.e.prevent
+                 @keydown.E.prevent
+                 @keydown.plus.prevent
+                 @keydown.minus.prevent
+                 @keydown.dot.prevent>
+          <label for="planYear"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Rok
+          </label>
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+          <input type="number" v-model="syllabusYear"
+                 class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                 required :min="1980" :max="2100" step="1"
+                 @keydown.e.prevent
+                 @keydown.E.prevent
+                 @keydown.plus.prevent
+                 @keydown.minus.prevent
+                 @keydown.dot.prevent>
+          <label for="syllabusYear"
+                 class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Program sylabusowy
+          </label>
+        </div>
+      </div>
       <div class="mt-4 flex justify-end">
-        <button type="button" @click="handleSubmit"
+        <button type="submit"
                 class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
           Dodaj
         </button>
@@ -109,7 +138,7 @@ const abortAddNew = () => {
           Anuluj
         </button>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 

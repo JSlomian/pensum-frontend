@@ -7,12 +7,12 @@ declare global {
         planYear: number,
         semester: number,
         programInMajors: ProgramInMajor,
-        subjectsInPrograms: SubjectInProgram[]
+        subject: Subject[]
     }
 
-    type ProgramCreate = Omit<Program, 'id' | '@id' | '@type' | 'subjectsInPrograms' | 'programInMajors'>
+    type ProgramCreate = Omit<Program, 'id' | '@id' | '@type' | 'subject' | 'programInMajors'>
     & {
-        programInMajors: string
+        programInMajors: string,
     }
 }
 
