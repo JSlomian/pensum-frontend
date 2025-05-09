@@ -7,8 +7,6 @@ export default defineNuxtConfig({
         '@nuxtjs/tailwindcss',
         '@sidebase/nuxt-auth',
         '@pinia/nuxt',
-        // '@nuxtjs/i18n',
-        // './modules/flowbite'
     ],
     imports: {
         dirs: [
@@ -46,11 +44,11 @@ export default defineNuxtConfig({
                 httpOnlyCookieAttribute: false,
             },
             refresh: {
-                isEnabled: false,
-                // endpoint: {path: '/api/token/refresh', method: 'post'},
-                // token: {
-                //     signInResponseRefreshTokenPointer: '/refresh_token'
-                // }
+                isEnabled: true,
+                endpoint: {path: '/token/refresh', method: 'post'},
+                token: {
+                    signInResponseRefreshTokenPointer: '/refresh_token'
+                }
             },
             session: {
                 dataType: {
