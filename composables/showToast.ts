@@ -8,12 +8,15 @@ export async function showToast(type: 'success' | 'danger' | 'warning', message:
     let Toast: DefineComponent<any, any, any>
     switch (type) {
         case "success":
+            // @ts-ignore
             Toast = (await import('~/components/Toast/ToastSuccess.vue')).default
             break;
         case "danger":
+            // @ts-ignore
             Toast = (await import('~/components/Toast/ToastDanger.vue')).default
             break;
         case "warning":
+            // @ts-ignore
             Toast = (await import('~/components/Toast/ToastWarning.vue')).default
             break;
     }

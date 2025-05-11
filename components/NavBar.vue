@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import TheSignOut from "~/components/TheSignOut.vue";
+const {getSession} = useAuth()
+const user = await getSession()
+// const isAdmin = user && user.roles.includes('ROLE_ADMIN')
+const isAdmin = true
 </script>
 
 <template>
@@ -35,7 +38,7 @@ import TheSignOut from "~/components/TheSignOut.vue";
                       aria-current="page">Strona Główna
             </NuxtLink>
           </li>
-          <li>
+          <li v-if="isAdmin">
             <button id="mega-menu-icons-dropdown-button" data-dropdown-toggle="mega-menu-icons-dropdown"
                     class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
               Ustawienia

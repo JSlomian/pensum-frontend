@@ -4,7 +4,10 @@ const unitsRoute = '/api/institutes'
 useHead({
   title: 'Kierunki'
 })
-
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error, status} = await useFetch<{ member: Major[] }>(route)
 const {data: institutes} = await useFetch<{ member: Institute[] }>(unitsRoute)

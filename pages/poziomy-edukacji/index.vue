@@ -3,7 +3,10 @@ const route = '/api/education_levels'
 useHead({
   title: 'Poziomy Edukacji'
 })
-
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error, status} = await useFetch<{ member: EducationLevel[] }>(route)
 

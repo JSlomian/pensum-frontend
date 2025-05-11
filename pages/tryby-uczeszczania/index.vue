@@ -3,7 +3,10 @@ const route = '/api/attendance_modes'
 useHead({
   title: 'Tryb Uczęszczania'
 })
-
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error, status} = await useFetch<{ member: AttendanceMode[] }>(route)
 

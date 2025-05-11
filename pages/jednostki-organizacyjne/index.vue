@@ -3,7 +3,10 @@ const route = '/api/institutes'
 useHead({
   title: 'Jednostki Organizacyjne'
 })
-
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error, status} = await useFetch<{ member: Institute[] }>(route)
 

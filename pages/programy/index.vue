@@ -1,52 +1,32 @@
 <script setup lang="ts">
 const route = '/api/programs'
 const pimsRoute = '/api/programs_in_majors'
-// const educationLevelsRoute = '/api/education_levels'
-// const attendanceModesRoute = '/api/attendance_modes'
 useHead({
   title: 'Programy'
 })
-
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error, status} = await useFetch<{ member: Program[] }>(route)
 const {data: pims} = await useFetch<{ member: Major[] }>(pimsRoute)
-// const {data: educationLevel} = await useFetch<{ member: EducationLevel[] }>(educationLevelsRoute)
-// const {data: attendanceMode} = await useFetch<{ member: AttendanceMode[] }>(attendanceModesRoute)
 
 const {callUpdate} = useUpdate(route)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
 const editPimIri = ref<string>('')
-// const editEducationLevelIri = ref<string>('')
-// const editAttendanceModeIri = ref<string>('')
 const deleteId = ref<number>(0)
 const modalOpen = ref<boolean>(false)
 const modalText = ref<string>('')
 
 const startEdit = (prog: Program) => {
   editId.value = prog.id;
-  // if (typeof pim.major === 'string') {
-  //   editMajorIri.value = pim.major
-  // } else {
-  //   editMajorIri.value = pim.major!['@id']
-  // }
-  // if (typeof pim.educationLevel === 'string') {
-  //   editEducationLevelIri.value = pim.educationLevel
-  // } else {
-  //   editEducationLevelIri.value = pim.educationLevel!['@id']
-  // }
-  // if (typeof pim.attendanceMode === 'string') {
-  //   editAttendanceModeIri.value = pim.attendanceMode
-  // } else {
-  //   editAttendanceModeIri.value = pim.attendanceMode!['@id']
-  // }
 }
 
 const cancelEdit = (): void => {
   editId.value = 0
   editPimIri.value = ''
-  // editEducationLevelIri.value = ''
-  // editAttendanceModeIri.value = ''
 }
 
 const handleDelete = async (id: number): Promise<void> => {
@@ -70,13 +50,6 @@ const handleDelete = async (id: number): Promise<void> => {
 
 const handleUpdate = (prog: Program): void => {
   try {
-    // const updatedPim = {
-    //   ...pim,
-    //   major: editMajorIri.value || '',
-    //   attendanceMode: editAttendanceModeIri || '',
-    //   educationLevel: editEducationLevelIri || ''
-    // }
-
     callUpdate(prog)
     handleCancelEdit()
     showToast('success', `Zaktualizowano`)

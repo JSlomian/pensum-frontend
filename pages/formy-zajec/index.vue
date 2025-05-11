@@ -2,6 +2,11 @@
 const route = '/api/class_types'
 useHead({
   title: 'Formy zajęć'
+
+})
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
 })
 
 const {data, refresh} = await useFetch<{ member: ClassType[] }>(route)

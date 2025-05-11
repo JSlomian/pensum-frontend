@@ -1,12 +1,12 @@
 export const useDelete = (route: string) => {
-    if(!route.endsWith('/')) {
+    const {$authFetch} = useAuth()
+    if (!route.endsWith('/')) {
         route = route + '/'
     }
-  const callDelete = async (id: number) =>
-  {
-      return await $fetch(`${route}${id}`, {
-          method: 'DELETE'
-      })
-  }
+    const callDelete = async (id: number) => {
+        return await $authFetch(`${route}${id}`, {
+            method: 'DELETE'
+        })
+    }
     return {callDelete}
 }

@@ -47,8 +47,15 @@ export default defineNuxtConfig({
                 isEnabled: true,
                 endpoint: {path: '/token/refresh', method: 'post'},
                 token: {
-                    signInResponseRefreshTokenPointer: '/refresh_token'
-                }
+                    signInResponseRefreshTokenPointer: '/refresh_token',
+                    refreshRequestTokenPointer: '/refresh_token',
+                    cookieName: 'auth.refresh',
+                    maxAgeInSeconds: 3600,
+                    sameSiteAttribute: 'lax',
+                    secureCookieAttribute: false,
+                    httpOnlyCookieAttribute: false,
+                },
+                refreshOnlyToken: true,
             },
             session: {
                 dataType: {

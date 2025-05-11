@@ -6,7 +6,10 @@ const attendanceModesRoute = '/api/attendance_modes'
 useHead({
   title: 'Programy'
 })
-
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error, status} = await useFetch<{ member: ProgramInMajor[] }>(route)
 const {data: major} = await useFetch<{ member: Major[] }>(majorsRoute)

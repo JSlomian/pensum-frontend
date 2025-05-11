@@ -3,6 +3,10 @@ const route = '/api/positions'
 useHead({
   title: 'Stanowiska'
 })
+definePageMeta({
+  middleware: 'require-roles',
+  requiresRoles: ['ROLE_ADMIN']
+})
 
 const {data, refresh, error} = await useFetch<{ member: Position[]}>(route)
 const {callUpdate} = useUpdate(route)
