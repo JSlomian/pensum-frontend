@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {initFlowbite} from 'flowbite'
 
 useHead({
   titleTemplate: (titleChunk) => {
@@ -12,9 +13,9 @@ useHead({
   }
 })
 
-// onErrorCaptured((err, instance, info) => {
-//   showToast('danger', info)
-// })
+onMounted(() => {
+  initFlowbite()
+})
 </script>
 <template>
   <nav>

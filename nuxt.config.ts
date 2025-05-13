@@ -67,21 +67,4 @@ export default defineNuxtConfig({
             }
         }
     },
-    plugins: [
-        {
-            src: 'plugins/flowbite.client.js'
-        }],
-    // i18n: {
-    //     locales: ['pl', 'en'],
-    //     defaultLocale: 'en',
-    //     strategy: 'no_prefix',
-    //     customRoutes: 'config',
-    //     detectBrowserLanguage: false,
-    //     pages: {
-    //         institutes: {
-    //             pl: '/jednostki--organizacyjne',
-    //             en: '/institutes'
-    //         }
-    //     }
-    // },
 })

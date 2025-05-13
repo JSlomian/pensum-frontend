@@ -21,7 +21,7 @@ const cancelEdit = (): void => {
   editId.value = 0
 }
 
-const handleDelete = (id: number): void => {
+const handleDelete = async (id: number): Promise<void> => {
   let ct: ClassType | undefined; // Declare ct in an outer scope
   try {
     ct = data.value?.member.find((c: ClassType) => c.id === id);
@@ -30,7 +30,7 @@ const handleDelete = (id: number): void => {
       modalOpen.value = false
       return
     }
-    callDelete(ct.id)
+    await callDelete(ct.id)
     modalOpen.value = false
     refresh()
     showToast('success', `Usunięto ${ct.type}`)
@@ -39,9 +39,9 @@ const handleDelete = (id: number): void => {
   }
 }
 
-const handleUpdate = (classType: ClassType): void => {
+const handleUpdate = async (classType: ClassType): Promise<void> => {
   try {
-    callUpdate(classType)
+    await callUpdate(classType)
     handleCancelEdit()
     showToast('success', `Zaktualizowano ${classType.type}`)
   } catch (e) {

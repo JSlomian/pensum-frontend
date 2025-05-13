@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const {getSession} = useAuth()
 const user = await getSession()
-// const isAdmin = user && user.roles.includes('ROLE_ADMIN')
-const isAdmin = true
+const isAdmin = user && user.roles.includes('ROLE_ADMIN')
+// const isAdmin = true
 </script>
 
 <template>
@@ -321,6 +321,12 @@ const isAdmin = true
             <NuxtLink to="/przydzialy-godzin"
                class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
               Przydziały
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink :to="`/raport/${user.id}`"
+               class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700">
+              Raport
             </NuxtLink>
           </li>
         </ul>

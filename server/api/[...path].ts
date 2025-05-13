@@ -39,8 +39,3 @@ export default defineEventHandler(async (event) => {
         };
     }
 });
-
-function useAuth(): { $authFetch: any; } {
-    throw new Error("Function not implemented.");
-}
-

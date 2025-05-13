@@ -1,10 +1,25 @@
 declare global {
 
-    type User = {
+    type ApiUser = {
         "@id": string,
         "@type": string,
+        id: number,
         email: string
+        roles: string[],
+        position: Position
+        last_name: string,
+        first_name: string,
+        institute: Institute,
+        subjectLecturers?: SubjectLecturer[]
     }
+    type ApiUserCreate = Omit<ApiUser, '@id' | '@type' | 'position' | 'institute'>
+        & {
+        position: string,
+        institute: string,
+        password: string
+    }
+
+    type ApiUserEdit = Omit<ApiUserCreate, 'password'>
 }
 
 export {}
