@@ -12,14 +12,11 @@ declare global {
         institute: Institute,
         subjectLecturers?: SubjectLecturer[]
     }
-    type ApiUserCreate = Omit<ApiUser, '@id' | '@type' | 'position' | 'institute'>
+    type ApiUserCreate = Omit<ApiUser, 'id' | '@id' | '@type' | 'position' | 'institute'>
         & {
         position: string,
         institute: string,
-        password: string
     }
-
-    type ApiUserEdit = Omit<ApiUserCreate, 'password'>
 }
 
 export {}

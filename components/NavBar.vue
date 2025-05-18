@@ -2,7 +2,6 @@
 const {getSession} = useAuth()
 const user = await getSession()
 const isAdmin = user && user.roles.includes('ROLE_ADMIN')
-// const isAdmin = true
 </script>
 
 <template>

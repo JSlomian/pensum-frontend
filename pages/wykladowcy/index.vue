@@ -3,15 +3,13 @@ const route = '/api/users'
 useHead({
   title: 'Wykładowcy'
 })
+
 definePageMeta({
   middleware: 'require-roles',
   requiresRoles: ['ROLE_ADMIN']
 })
 
 const {data, refresh, error, status} = await useFetch<{ member: ApiUser[] }>(route)
-
-
-console.log(data)
 const {callDelete} = useDelete(route)
 const editId = ref<number>(0)
 
@@ -93,8 +91,8 @@ const openDeleteModal = (user: ApiUser): void => {
         <tr v-for="(user, index) in data?.member as ApiUser[]" :key="user.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <template v-if="editId == user.id">
-            <td class="px-6 py-4" colspan="5">
-<!--              <EditUser :user="user" @abort="handleCancelEdit" @success="handleCancelEdit"/>-->
+            <td class="px-6 py-4 dark:hover:bg-gray-800 hover:bg-white" colspan="5">
+              <EditUser :user="user" :route="route" @abort="handleCancelEdit" @success="handleCancelEdit"/>
             </td>
           </template>
           <template v-else>
@@ -108,42 +106,9 @@ const openDeleteModal = (user: ApiUser): void => {
               {{ user.position?.pensum || "" }}
           </td>
           <td class="px-6 py-4 w-24">
-<!--            <select-->
-<!--                v-if="editId === user.id"-->
-<!--                v-model="editUnitIri"-->
-<!--                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">-->
-<!--              <option-->
-<!--                  v-if="institutes?.member && institutes?.member?.length > 0"-->
-<!--                  v-for="institute in institutes?.member"-->
-<!--                  :value="institute['@id']"-->
-<!--                  :key="institute['@id']"-->
-<!--              >-->
-<!--                {{ institute.abbreviation }}-->
-<!--              </option>-->
-<!--            </select>-->
             {{ user.institute?.abbreviation || "Brak" }}
           </td>
-<!--          <td class="px-6 py-4 w-24">-->
-<!--            <span v-if="editId === user.id">-->
-<!--            <label class="inline-flex items-center mb-5 cursor-pointer">-->
-<!--              <input type="checkbox" v-model="user.roles"-->
-<!--                     value="ROLE_ADMIN" class="sr-only peer" :checked="user.roles.includes('ROLE_ADMIN')">-->
-<!--              <div-->
-<!--                  class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>-->
-<!--              <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Admin</span>-->
-<!--            </label>-->
-<!--            </span>-->
-<!--            <span v-else>-->
-<!--            {{ user.roles.includes('ROLE_ADMIN') ? "Admin" : "Użytkownik" }}-->
-<!--            </span>-->
-<!--          </td>-->
           <td class="px-6 py-4 text-right">
-<!--            <div v-if="editId === user.id">-->
-<!--              <span @click="handleUpdate(user)"-->
-<!--                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Zapisz</span>-->
-<!--              <span @click="handleCancelEdit"-->
-<!--                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Anuluj</span>-->
-<!--            </div>-->
             <div>
               <NuxtLink :to="`/raport/${user.id}`"
                         class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2">Raport
