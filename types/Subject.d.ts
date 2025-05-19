@@ -15,9 +15,9 @@ declare global {
         Omit<Subject, 'id' | '@id' | '@type' | 'program' | 'subjectHours' | 'subjectGroups' | 'subjectLecturers'>
         & {
         program: string,
-        subjectHours: string,
-        subjectGroups: string,
-        subjectLecturers: string
+        subjectHours?: string,
+        subjectGroups?: string,
+        subjectLecturers?: string
     }
 }
 

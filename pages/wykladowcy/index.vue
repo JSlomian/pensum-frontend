@@ -90,7 +90,7 @@ const openDeleteModal = (user: ApiUser): void => {
         <tbody>
         <tr v-for="(user, index) in data?.member as ApiUser[]" :key="user.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-          <template v-if="editId == user.id">
+          <template v-if="editId === user.id">
             <td class="px-6 py-4 dark:hover:bg-gray-800 hover:bg-white" colspan="5">
               <EditUser :user="user" :route="route" @abort="handleCancelEdit" @success="handleCancelEdit"/>
             </td>
