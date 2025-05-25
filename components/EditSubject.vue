@@ -1,10 +1,9 @@
 <script setup lang="ts">
 const ctRoute = '/api/class_types'
-const posRoute = '/api/positions'
+const route = '/api/subjects'
 
 const props = defineProps<{
   subject: Subject,
-  route: string,
 }>()
 
 let editable = reactive<Subject>(JSON.parse(JSON.stringify(props.subject)))
@@ -13,28 +12,53 @@ watch(() => props.subject, (newVal) => {
 })
 
 const emits = defineEmits(['abort', 'success'])
-const {callUpdate} = useUpdate(props.route)
-// const editUnitIri = ref<string>(editable.institute?.['@id'] || '')
-// const editPosIri = ref<string>(editable.position?.['@id'] || '')
-// const roleSelect = ref<string>(editable.roles[0] || 'ROLE_USER')
+const {callUpdate} = useUpdate(route)
 const {data: classTypes} = await useFetch<{ member: ClassType[] }>(ctRoute)
-// const {data: positions} = await useFetch<{ member: Position[] }>(posRoute, {lazy: true})
+const onAmountChangeGroups = (iri: string, value: number) => {
+  if (value === null || value === undefined || isNaN(value)) return
+  const group = editable.subjectGroups.find(g => g.classType["@id"] === iri || g.classType === iri)
 
-// const positionChosenWhileEditing = computed(() => {
-//       return positions.value?.member?.find((p: Position) => p['@id'] === editPosIri.value)
-//     }
-// )
+  if (group) {
+    group.amount = value
+  } else {
+    if (editable['@id'] && value !== 0) {
+      editable.subjectGroups.push({
+        classType: iri,
+        amount: value,
+        subject: editable['@id']
+      } as any)
+    }
+  }
+}
+const onAmountChangeHours = (iri: string, value: number) => {
+  if (value === null || value === undefined || isNaN(value)) return
+  const group = editable.subjectHours.find(g => g.classType["@id"] === iri || g.classType === iri)
+
+  if (group) {
+    group.hoursRequired = value
+  } else {
+    if (editable['@id'] && value !== 0) {
+      editable.subjectHours.push({
+        classType: iri,
+        requiredHours: value,
+        subject: editable['@id']
+      } as any)
+    }
+  }
+}
 
 const handleUpdate = (subject: Subject): void => {
   try {
-    // const updatedUser = {
-    //   ...user,
-    //   roles: [roleSelect.value],
-    //   institute: editUnitIri.value || '',
-    //   position: editPosIri.value || ''
-    // } satisfies ApiUserCreate
+    console.log(subject)
 
-    callUpdate(subject)
+    const updatedSubject = {
+      ...subject,
+      //   roles: [roleSelect.value],
+      //   institute: editUnitIri.value || '',
+      //   position: editPosIri.value || ''
+    }
+
+    callUpdate(updatedSubject)
     emits('success')
     showToast('success', `Zaktualizowano ${subject.name}`)
   } catch (e) {
@@ -63,25 +87,70 @@ const handleUpdate = (subject: Subject): void => {
           class="col-span-1"
           v-if="classTypes?.member"
           v-for="ct in classTypes?.member as ClassType[]" :key="ct.id">
-          <label for="last_name" class=" mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ct.type}}</label>
-          <input type="text" id="last_name" v-model="editable.id" maxlength="255"
-                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                 required/>
+        <label for="last_name" class=" mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ ct.type }}</label>
+        <input type="number" id="last_name"
+               maxlength="255"
+               :value="editable.subjectGroups.find(g => g.classType['@id'] === ct['@id'] || g.classType === ct['@id'])?.amount || ''"
+                @input="onAmountChangeGroups(ct['@id'], Number($event.target.value))"
+               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+               required/>
       </div>
     </div>
-    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Godziny</h2>
-        <div v-if="classTypes?.member" :class="`grid gap-6 mb-6 grid-cols-${classTypes?.member?.length || '6'}`">
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Ilość godzin wymaganych</h2>
+    <div v-if="classTypes?.member" :class="`grid gap-6 mb-6 grid-cols-${classTypes?.member?.length || '6'}`">
       <div
           class="col-span-1"
           v-if="classTypes?.member"
           v-for="ct in classTypes?.member as ClassType[]" :key="ct.id">
-          <label for="last_name" class=" mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ct.type}}</label>
-          <input type="text" id="last_name" v-model="editable.id" maxlength="255"
-                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                 required/>
+        <label :for="ct.type" class=" mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ ct.type }}</label>
+        <input type="number" :id="ct.type" maxlength="255"
+               :value="editable.subjectHours.find(g => g.classType['@id'] === ct['@id'] || g.classType === ct['@id'])?.hoursRequired || ''"
+                @input="onAmountChangeHours(ct['@id'], Number($event.target.value))"
+               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+               required/>
       </div>
     </div>
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Przydziały</h2>
+    <div class="grid gap-6 mb-6 grid-cols-3">
+      <template v-for="sl in editable.subjectLecturers as SubjectLecturerCreate[]">
+        <div>
+
+        <label for="sl" class=" mb-2 text-sm font-medium text-gray-900 dark:text-white">Ilość godzin</label>
+        <input type="number" id="sl" maxlength="255"
+               v-model="sl.subjectHours"
+               class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+               required/>
+        </div>
+        <div>
+        <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Wykładowca</label>
+        <select v-model="sl.user" name="role"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option value="ROLE_USER">
+            Użytkownik
+          </option>
+          <option value="ROLE_ADMIN">
+            Administrator
+          </option>
+        </select>
+        </div>
+        <div><label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Forma zajęć</label>
+        <select v-model="sl.user" name="role"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option value="ROLE_USER">
+            Użytkownik
+          </option>
+          <option value="ROLE_ADMIN">
+            Administrator
+          </option>
+        </select></div>
+      </template>
+    </div>
+    <button @click="editable.subjectLecturers.push({subject: editable['@id']} as SubjectLecturerCreate)"
+            type="button"
+            class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+      Dodaj
+    </button>
+
     <!--      <div>-->
     <!--        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">E-mail</label>-->
     <!--        <input type="email" id="email" v-model="editable.email" maxlength="180"-->

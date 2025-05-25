@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const routeString = useRoute()
-console.log(routeString)
 const id = ref<number>(routeString.params.id as unknown as number)
 const route = `/api/subjects?program.id=${id}`
 const ctRoute = `/api/class_types`
@@ -69,6 +68,10 @@ const openDeleteModal = (subject: Subject): void => {
       <table v-if="data?.member && data?.member?.length > 0"
              class="md:table-fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <template v-if="editId != 0">
+          <tr><th colspan="7" class="text-center align-middle">Edycja</th></tr>
+        </template>
+        <template v-else>
         <tr>
           <th scope="col" class="text-center align-middle w-12">
             #
@@ -116,13 +119,14 @@ const openDeleteModal = (subject: Subject): void => {
           <th scope="col" class="">
           </th>
         </tr>
+        </template>
         </thead>
         <tbody>
         <tr v-for="(subject, index) in data?.member as Subject[]" :key="subject.id"
             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
           <template v-if="editId === subject.id">
-            <td colspan="7" class="px-6 py-4">
-              <EditSubject :subject="subject" :route="route" @abort="handleCancelEdit" @success="handleCancelEdit"/>
+            <td colspan="7" class="px-6 py-4 dark:hover:bg-gray-800 hover:bg-white">
+              <EditSubject :subject="subject" @abort="handleCancelEdit" @success="handleCancelEdit"/>
             </td>
           </template>
           <template v-else>
@@ -134,21 +138,21 @@ const openDeleteModal = (subject: Subject): void => {
             </td>
             <td class="text-center">
             <span v-for="(ct, index) in classTypes?.member as ClassType[]" :key="ct.id"
-                  :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes.member?.length ? 'border-l' : ''}`">
-                {{ subject.subjectGroups?.find((sg) => sg.classType.id === ct.id)?.amount || "&nbsp;" }}
+                  :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes?.member?.length ? 'border-l' : ''}`">
+                {{ subject.subjectGroups?.find((sg) => sg.classType == ct['@id'])?.amount || "&nbsp;" }}
             </span>
             </td>
             <td class="text-center">
             <span v-for="(ct, index) in classTypes?.member as ClassType[]" :key="ct.id"
-                  :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes.member?.length ? 'border-l' : ''}`">
-                {{ subject.subjectHours.find((sh) => sh.classType.id === ct.id)?.hoursRequired || "&nbsp;" }}
+                  :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes?.member?.length ? 'border-l' : ''}`">
+                {{ (subject.subjectGroups?.find((sg) => sg.classType == ct['@id'])?.amount*subject.subjectHours.find((sh) => sh.classType == ct['@id'])?.hoursRequired) || "&nbsp;" }}
             </span>
             </td>
             <td class="text-center">
-              {{ subject.subjectHours?.reduce((sum, h) => sum + h.hoursRequired, 0) || "" }}
+              ({{ subject.subjectLecturers?.reduce((sum, h) => sum + h.subjectHours, 0) || 0 }}){{ subject.subjectHours?.reduce((sum, h) => sum + h.hoursRequired, 0) || "" }}
             </td>
             <td class="text-center">
-              asdd
+
             </td>
             <td class="text-right pe-1">
               <span @click="startEdit(subject)"
