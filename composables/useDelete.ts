@@ -1,4 +1,5 @@
 export const useDelete = (route: string) => {
+    route = route.split('?')[0]
     if (!route.endsWith('/')) {
         route = route + '/'
     }

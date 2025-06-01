@@ -1,4 +1,5 @@
 export const useUpdate = (route: string) => {
+    route = route.split('?')[0]
     if (!route.endsWith('/')) {
         route = route + '/'
     }

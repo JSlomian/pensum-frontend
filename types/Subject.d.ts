@@ -8,7 +8,7 @@ declare global {
         program: Program,
         subjectHours: SubjectHours[],
         subjectGroups: SubjectGroup[],
-        subjectLecturers: SubjectLecturer[]
+        subjectLecturers: (SubjectLecturer | SubjectLecturerCreate)[]
     }
 
     type SubjectCreate =

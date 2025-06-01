@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const {signOut} = useAuth()
-const {loading} = useAuthState()
 
 async function onLogout() {
   await signOut({callbackUrl: '/login'})
@@ -10,6 +9,6 @@ async function onLogout() {
 <template>
   <button @click="onLogout"
           class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 md:px-5 md:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
-    {{ loading ? 'Wylogowywanie…' : 'Wyloguj' }}
+    Wyloguj
   </button>
 </template>

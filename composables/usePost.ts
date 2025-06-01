@@ -1,4 +1,5 @@
 export const usePost = (route: string) => {
+    route = route.split('?')[0]
     if (route.endsWith('/')) {
         route = route.slice(0, -1)
     }

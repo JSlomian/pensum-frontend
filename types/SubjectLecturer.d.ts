@@ -6,7 +6,7 @@ declare global {
         id: number,
         subject: Subject,
         classType: ClassType,
-        user: User,
+        user: ApiUser,
         subjectHours: number
     }
 
@@ -14,7 +14,8 @@ declare global {
         & {
         subject: string,
         classType: string,
-        user: string
+        user: string,
+        subjectHours: number
     }
 }
 

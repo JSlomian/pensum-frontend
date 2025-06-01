@@ -10,7 +10,8 @@ declare global {
         last_name: string,
         first_name: string,
         institute: Institute,
-        subjectLecturers?: SubjectLecturer[]
+        subjectLecturers?: SubjectLecturer[],
+        hoursUsed?: number
     }
     type ApiUserCreate = Omit<ApiUser, 'id' | '@id' | '@type' | 'position' | 'institute'>
         & {
