@@ -9,7 +9,7 @@ export const usePost = (route: string) => {
                 body: rest,
                 credentials: "include"
             },
-        )
+        );
     }
     return {callPost}
 }

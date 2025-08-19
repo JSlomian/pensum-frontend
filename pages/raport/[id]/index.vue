@@ -3,9 +3,11 @@ const routeString = useRoute()
 const id = routeString.params.id
 const usrRoute = `/api/users/${id}`
 const slRoute = `/api/subject_lecturers?user.id=${id}`
+const sRoute = `/api/subjects?subjectLecturers.user.id=${id}`
 const ctRoute = `/api/class_types`
 const {data: userData} = await useFetch<ApiUser>(usrRoute)
 const {data} = await useFetch<{ member: SubjectLecturer[] }>(slRoute)
+const {data: subjects} = await useFetch<{ member: Subject[] }>(sRoute)
 const {data: classTypes} = await useFetch<{ member: ClassType[] }>(ctRoute)
 useHead(
     computed(() => {
@@ -23,17 +25,39 @@ useHead(
 const {getSession} = useAuth()
 const user = await getSession()
 const isAdmin = user && user.roles.includes('ROLE_ADMIN')
-onMounted(() => {
-  console.log(data)
-})
 
+const getHoursRatio = (sl: SubjectLecturer, ct: ClassType): number|'\u00A0' => {
+  const required = sl.subject.subjectHours?.find(
+      (sh) => sh.classType['@id'] === ct['@id']
+  )?.hoursRequired ?? NaN;
+
+  const val = sl.subjectHours / required;
+
+  return (isNaN(val) || !isFinite(val)) ? '\u00A0' : val;
+}
+
+const getSpecialityShortcut = (sl: SubjectLecturer): string => {
+  return sl.subject.program.programInMajors.major?.abbreviation + "-"
+      + sl.subject.program.programInMajors.educationLevel.abbreviation + "-"
+      + sl.subject.program.programInMajors.attendanceMode.abbreviation
+}
+
+const sumGroups = (sl: SubjectLecturer): number => {
+  return sl.subject.subjectGroups.reduce((sum: number, group: SubjectGroup) => {
+    const groupRatio = getHoursRatio(sl, group.classType)
+    return sum + (typeof groupRatio === 'number' ? groupRatio : 0)
+  }, 0)
+}
+
+onMounted(() => {
+  console.log(subjects)
+})
 
 </script>
 <template>
   <div class="container mx-auto p-6 relative overflow-x-auto shadow-md sm:rounded-lg">
 
-    <div v-if="userData">
-
+    <div v-if="userData" class="grid grid-cols-2">
       <dl class="max-w-md text-gray-900 divide-y divide-gray-200 dark:text-white dark:divide-gray-700">
         <div class="flex flex-col pb-3">
           <dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">Wykładowca</dt>
@@ -54,8 +78,18 @@ onMounted(() => {
           <dd class="text-lg font-semibold">{{ userData.institute.name ?? "" }}</dd>
         </div>
       </dl>
+      <div>
+      </div>
+      <div class="col-span-2 mt-5">
+        <AlertDanger title=""
+                     message="Suma godzin podzielona przez ilość grup daje ilość godzin przypadającą na jedną grupę."/>
+        <AlertDanger title=""
+                     message="Jeżeli ilość grup jest liczbą niecałkowitą, to prowadzący realizuje z grupą tylko część zajęć."/>
+        <AlertDanger title=""
+                     message="Jeżeli ilość grup jest polem pustym to oznacza, iż nastąpił błąd przydziału formy zajęć."/>
+        <!--        <AlertWarning title="" message="PRZEDMIOTY PROWADZONE W JĘZYKU OBCYM MAJĄ PRZELICZNIK 2.0" />-->
+      </div>
     </div>
-
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
       <table v-if="data"
@@ -99,28 +133,35 @@ onMounted(() => {
           </th>
           <td class="">
                     <span>
-<!--                                        {{ sl.subject.program.programInMajors.major?.abbreviation }}-{{-->
-                      <!--                        sl.subject.program.programInMajors.educationLevel.abbreviation-->
-                      <!--                      }}-{{ sl.subject.program.programInMajors.attendanceMode.abbreviation }}-->
+                      {{ getSpecialityShortcut(sl) }}
                     </span>
           </td>
           <td class="text-center">
             <span v-for="(ct, index) in classTypes?.member as ClassType[]" :key="ct.id"
                   :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes?.member?.length ? 'border-l' : ''}`">
-                {{ sl.subject.subjectGroups?.find((sg) => sg.classType == ct['@id'])?.amount || "&nbsp;" }}
+              {{ getHoursRatio(sl, ct) }}
             </span>
           </td>
-          <td class=" text-right">
-            <div>
-
-            </div>
+          <td class="text-center">
+            <span v-for="(ct, index) in classTypes?.member as ClassType[]" :key="ct.id"
+                  :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes?.member?.length ? 'border-l' : ''}`">
+              {{ (sl.classType['@id'] === ct['@id']) ? sl.subjectHours : "&nbsp;" }}
+            </span>
+          </td>
+                    <td>{{ sumGroups(sl) }}</td>
+          <td>
+            {{sl.subjectHours}}
+<!--            {{-->
+<!--              sl.subjectHours.reduce((sum: number, hours: SubjectHours) => {-->
+<!--                return sum + hours.hoursRequired-->
+<!--              })}}-->
           </td>
         </tr>
         </tbody>
       </table>
     </div>
     <AlertWarning v-if="data?.member && data?.member?.length == 0"
-                  message="Brak dostępnych programów, dodaj nowy."/>
+                  message="Brak przedmiotów w raporcie."/>
   </div>
 </template>
 

@@ -12,7 +12,7 @@ export const useUpdate = (route: string) => {
             },
             body: rest,
             credentials: 'include'
-        })
+        });
     }
     return {callUpdate}
 }

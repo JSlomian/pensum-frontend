@@ -39,10 +39,9 @@ const handleDelete = async (id: number): Promise<void> => {
       return
     }
     const res = await callDelete(prog.id)
-    console.log(res)
     modalOpen.value = false
     await refresh()
-    await showToast('success', `Usunięto ${prog.id}`)
+    await showToast('success', `Usunięto`)
   } catch (e) {
     await showToast('danger', `Nie udało się usunąć.`)
   }
@@ -66,7 +65,10 @@ const handleCancelEdit = (): void => {
 const openDeleteModal = (prog: Program): void => {
   modalOpen.value = true
   deleteId.value = prog.id
-  modalText.value = `Czy napewno chcesz usunąć program <span style="font-weight: bold">${prog.id}</span>?`
+  modalText.value = `Czy napewno chcesz usunąć program <br />
+    Semestr: <span style="font-weight: bold">${prog.semester}</span>,
+    Rok: <span style="font-weight: bold">${prog.planYear}</span>,
+    Rok sylabusowy: <span style="font-weight: bold">${prog.syllabusYear}</span>?`
 }
 
 const requiredFilled = computed((): boolean => {

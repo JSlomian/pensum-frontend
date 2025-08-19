@@ -6,6 +6,7 @@ declare global {
         id: number,
         planYear: number,
         semester: number,
+        syllabusYear: number,
         programInMajors: ProgramInMajor,
         subject: Subject[]
     }
