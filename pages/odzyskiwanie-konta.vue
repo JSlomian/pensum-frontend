@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 definePageMeta({
   layout: 'login',
   auth: {
@@ -9,8 +9,8 @@ definePageMeta({
 </script>
 
 <template>
-  <RecoverAccount/>
-  <ResetPassword/>
+  <RecoverAccount />
+  <ResetPassword />
 </template>
 
 <style scoped>
