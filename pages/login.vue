@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import {catchClause} from "@babel/types";
 
 const {signIn} = useAuth()
 const router = useRouter()
@@ -17,7 +16,7 @@ const error = ref("")
 
 const handleSubmit = async () => {
   try {
-    const res = await signIn({
+    await signIn({
           email: email.value,
           password: password.value
         },
@@ -28,9 +27,10 @@ const handleSubmit = async () => {
     await router.push('/')
   } catch (err: any) {
     let apiError = 'Nie udało się zalogować'
-    if (err.response.status === 401) {
+    console.log(err)
+    // if (res.response.status === 401) {
       apiError = apiError + ', nieprawidłowe hasło lub login.'
-    }
+    // }
     await showToast('danger', apiError)
   }
 }

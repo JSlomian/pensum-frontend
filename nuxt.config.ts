@@ -17,12 +17,12 @@ export default defineNuxtConfig({
         cssPath: '~/assets/css/input.css'
     },
     runtimeConfig: {
-        api_url: 'https://localhost:8000'
+        api_url: 'https://api.ddev.site'
     },
     auth: {
         globalAppMiddleware: true,
         isEnabled: true,
-        baseURL: 'https://localhost:8000',
+        baseURL: 'https://api.ddev.site',
         originEnvKey: 'NUXT_PUBLIC_API_URL',
         provider: {
             type: 'local',

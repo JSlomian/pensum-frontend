@@ -51,6 +51,7 @@ const sumGroups = (sl: SubjectLecturer): number => {
 
 onMounted(() => {
   console.log(subjects)
+  console.log(userData)
 })
 
 </script>

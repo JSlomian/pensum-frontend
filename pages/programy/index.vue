@@ -81,7 +81,7 @@ const requiredFilled = computed((): boolean => {
                @abort="modalOpen = false"/>
   <div class="container mx-auto p-6 relative overflow-x-auto shadow-md sm:rounded-lg">
     <AlertWarning v-if="!requiredFilled"
-                  message="Musisz posiadać dostępne progrmay na kierunkach"/>
+                  message="Musisz posiadać dostępne programy na kierunkach"/>
     <AddNewProgram v-if="requiredFilled" @success="refresh" :route="route"/>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg" v-if="requiredFilled">
       <table v-if="data?.member && data?.member?.length > 0"
