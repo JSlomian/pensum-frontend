@@ -5,7 +5,7 @@ const emits = defineEmits(['sent'])
 const buttonBlocked = ref<boolean>(false)
 const handleSubmit = async () => {
   buttonBlocked.value = true
-  const res = await $fetch(sendEmailRoute, {
+  const res = await $fetch<{ status: 'sent' | 'error' }>(sendEmailRoute, {
     method: 'POST',
     body: { email: email.value },
   })
@@ -50,19 +50,19 @@ const handleSubmit = async () => {
         </p>
         <form
           class="mt-4 space-y-4 lg:mt-5 md:space-y-5"
-          @submit.prevent="handleSubmit"
           method="post"
+          @submit.prevent="handleSubmit"
         >
           <div>
             <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Twój email</label
             >
             <input
+              id="email"
+              v-model="email"
               type="email"
               name="email"
-              id="email"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              v-model="email"
               placeholder="inazwisko@upsl.edu.pl"
               required
               :disabled="buttonBlocked"

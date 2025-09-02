@@ -3,11 +3,7 @@
 export default defineNuxtConfig({
     compatibilityDate: '2024-11-01',
     devtools: {enabled: true},
-    modules: [
-        '@nuxtjs/tailwindcss',
-        '@sidebase/nuxt-auth',
-        '@pinia/nuxt',
-    ],
+    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth', '@pinia/nuxt', '@nuxt/eslint'],
     imports: {
         dirs: [
             'types/*.d.ts'

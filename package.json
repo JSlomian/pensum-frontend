@@ -10,10 +10,12 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/eslint": "^1.9.0",
     "@nuxtjs/i18n": "^9.3.2",
     "@nuxtjs/tailwindcss": "^6.13.1",
     "@sidebase/nuxt-auth": "^0.10.0",
     "dotenv": "^16.4.7",
+    "eslint": "^9.34.0",
     "flowbite": "^3.1.2",
     "next-auth": "~4.21.1",
     "nuxt": "^3.18.1"
