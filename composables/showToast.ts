@@ -2,7 +2,7 @@ import {createVNode, render, type DefineComponent} from 'vue'
 
 export async function showToast(type: 'success' | 'danger' | 'warning', message: string) {
     const container = document.createElement('div')
-    let toaster = document.querySelector('#toaster')
+    const toaster = document.querySelector('#toaster')
     toaster?.appendChild(container)
 
     let Toast: DefineComponent<any, any, any>

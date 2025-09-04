@@ -1,59 +1,59 @@
 <script setup lang="ts">
-import { Modal } from 'flowbite'
+  import { Modal } from 'flowbite'
 
-const props = defineProps({
-  open: Boolean,
-  text: {
-    default: '',
-    required: false,
-    type: String,
-  },
-})
-// const modalRef = ref<HTMLElement | null>(null)
-let modal: any = null
-const { open, text } = toRefs(props)
-const emits = defineEmits(['confirm', 'abort'])
-const modalOptions = {
-  backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40',
-}
-onMounted(() => {
-  const modalElem: any = document.querySelector('#modal')
-  if (modalElem) {
-    modal = new Modal(modalElem, modalOptions)
+  const props = defineProps({
+    open: Boolean,
+    text: {
+      default: '',
+      required: false,
+      type: String,
+    },
+  })
+  // const modalRef = ref<HTMLElement | null>(null)
+  let modal: any = null
+  const { open, text } = toRefs(props)
+  const emits = defineEmits(['confirm', 'abort'])
+  const modalOptions = {
+    backdropClasses: 'bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40',
   }
-})
+  onMounted(() => {
+    const modalElem: any = document.querySelector('#modal')
+    if (modalElem) {
+      modal = new Modal(modalElem, modalOptions)
+    }
+  })
 
-function confirm(): void {
-  emits('confirm')
-}
-
-function abort(): void {
-  emits('abort')
-}
-
-watch(open, () => {
-  if (open.value) {
-    modal.show()
-  } else {
-    modal.hide()
+  function confirm(): void {
+    emits('confirm')
   }
-})
+
+  function abort(): void {
+    emits('abort')
+  }
+
+  watch(open, () => {
+    if (open.value) {
+      modal.show()
+    } else {
+      modal.hide()
+    }
+  })
 </script>
 <template>
   <div
     id="modal"
     tabindex="-1"
-    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden md:inset-0"
   >
-    <div class="relative p-4 w-full max-w-md max-h-full">
-      <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+    <div class="relative max-h-full w-full max-w-md p-4">
+      <div class="relative rounded-lg bg-white shadow-sm dark:bg-gray-700">
         <button
           type="button"
-          class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          class="absolute end-2.5 top-3 ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
           @click="abort"
         >
           <svg
-            class="w-3 h-3"
+            class="h-3 w-3"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -69,9 +69,9 @@ watch(open, () => {
           </svg>
           <span class="sr-only">Close modal</span>
         </button>
-        <div class="p-4 md:p-5 text-center">
+        <div class="p-4 text-center md:p-5">
           <svg
-            class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+            class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-200"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -89,14 +89,14 @@ watch(open, () => {
           <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400" v-html="text" />
           <button
             type="button"
-            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+            class="inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800"
             @click="confirm"
           >
             Tak
           </button>
           <button
             type="button"
-            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            class="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
             @click="abort"
           >
             Anuluj

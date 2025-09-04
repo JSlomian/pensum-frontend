@@ -1,112 +1,114 @@
 <script setup lang="ts">
-const ctRoute = '/api/class_types'
+  const ctRoute = '/api/class_types'
 
-const props = defineProps<{
-  subject: Subject
-  program: Program
-}>()
-const route = `/api/subjects`
-const usrRoute = `/api/users?hoursYear=${props.program.planYear}&exists[position.pensum]=true`
+  const props = defineProps<{
+    subject: Subject
+    program: Program
+  }>()
+  const route = `/api/subjects`
+  const usrRoute = `/api/users?hoursYear=${props.program.planYear}&exists[position.pensum]=true`
 
-let editable = reactive<Subject>(JSON.parse(JSON.stringify(props.subject)))
-watch(
-  () => props.subject,
-  (newVal) => {
-    editable = reactive<Subject>(JSON.parse(JSON.stringify(newVal)))
-  }
-)
-
-const emits = defineEmits(['abort', 'success'])
-const { callUpdate } = useUpdate(route)
-const { data: classTypes } = await useFetch<{ member: ClassType[] }>(ctRoute)
-const { data: users } = await useFetch<{ member: ApiUser[] }>(usrRoute)
-
-const onAmountChangeGroups = (iri: string, value: number) => {
-  if (value === null || value === undefined || isNaN(value)) return
-  const group = editable.subjectGroups.find(
-    (g) => g.classType['@id'] === iri || g.classType === iri
+  let editable = reactive<Subject>(JSON.parse(JSON.stringify(props.subject)))
+  watch(
+    () => props.subject,
+    (newVal) => {
+      editable = reactive<Subject>(JSON.parse(JSON.stringify(newVal)))
+    }
   )
 
-  if (group) {
-    group.amount = value
-  } else {
-    if (editable['@id'] && value !== 0) {
-      editable.subjectGroups.push({
-        classType: iri,
-        amount: value,
-        subject: editable['@id'],
-      } as any)
+  const emits = defineEmits(['abort', 'success'])
+  const { callUpdate } = useUpdate(route)
+  const { data: classTypes } = await useFetch<{ member: ClassType[] }>(ctRoute)
+  const { data: users } = await useFetch<{ member: ApiUser[] }>(usrRoute)
+
+  const onAmountChangeGroups = (iri: string, value: number) => {
+    if (value === null || value === undefined || isNaN(value)) return
+    const group = editable.subjectGroups.find(
+      (g) => g.classType['@id'] === iri || g.classType === iri
+    )
+
+    if (group) {
+      group.amount = value
+    } else {
+      if (editable['@id'] && value !== 0) {
+        editable.subjectGroups.push({
+          classType: iri,
+          amount: value,
+          subject: editable['@id'],
+        } as any)
+      }
     }
   }
-}
-const onAmountChangeHours = (iri: string, value: number) => {
-  if (value === null || value === undefined || isNaN(value)) return
-  const group = editable.subjectHours.find((g) => g.classType['@id'] === iri || g.classType === iri)
+  const onAmountChangeHours = (iri: string, value: number) => {
+    if (value === null || value === undefined || isNaN(value)) return
+    const group = editable.subjectHours.find(
+      (g) => g.classType['@id'] === iri || g.classType === iri
+    )
 
-  if (group) {
-    group.hoursRequired = value
-  } else {
-    if (editable['@id'] && value !== 0) {
-      editable.subjectHours.push({
-        classType: iri,
-        requiredHours: value,
-        subject: editable['@id'],
-      } as any)
+    if (group) {
+      group.hoursRequired = value
+    } else {
+      if (editable['@id'] && value !== 0) {
+        editable.subjectHours.push({
+          classType: iri,
+          requiredHours: value,
+          subject: editable['@id'],
+        } as any)
+      }
     }
   }
-}
 
-const handleUpdate = (subject: Subject): void => {
-  try {
-    console.log(subject)
+  const handleUpdate = (subject: Subject): void => {
+    try {
+      console.log(subject)
 
-    const updatedSubject = {
-      ...subject,
-      //   roles: [roleSelect.value],
-      //   institute: editUnitIri.value || '',
-      //   position: editPosIri.value || ''
+      const updatedSubject = {
+        ...subject,
+        //   roles: [roleSelect.value],
+        //   institute: editUnitIri.value || '',
+        //   position: editPosIri.value || ''
+      }
+
+      callUpdate(updatedSubject)
+      emits('success')
+      showToast('success', `Zaktualizowano ${subject.name}`)
+    } catch (e) {
+      showToast('danger', `Nie udało się zaktualizować.`)
     }
-
-    callUpdate(updatedSubject)
-    emits('success')
-    showToast('success', `Zaktualizowano ${subject.name}`)
-  } catch (e) {
-    showToast('danger', `Nie udało się zaktualizować.`)
   }
-}
-const removeLecturer = (i: number) => {
-  console.log(editable.subjectLecturers)
-  editable.subjectLecturers.splice(i, 1)
-  console.log(editable.subjectLecturers)
-}
-
-const addSubjectLecturer = () => {
-  const newLecturer: SubjectLecturerCreate = {
-    subject: editable['@id'],
-    classType: '',
-    user: '',
-    subjectHours: 0,
+  const removeLecturer = (i: number) => {
+    console.log(editable.subjectLecturers)
+    editable.subjectLecturers.splice(i, 1)
+    console.log(editable.subjectLecturers)
   }
-  editable.subjectLecturers.push(newLecturer)
-}
+
+  const addSubjectLecturer = () => {
+    const newLecturer: SubjectLecturerCreate = {
+      subject: editable['@id'],
+      classType: '',
+      user: '',
+      subjectHours: 0,
+    }
+    editable.subjectLecturers.push(newLecturer)
+  }
 </script>
 
 <template>
   <form @submit.prevent>
     <div class="w-100 text-right">
       <span
-        class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2"
+        class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
         @click="handleUpdate(editable)"
         >Zapisz</span
       >
       <span
-        class="font-medium text-blue-600 dark:text-blue-500 hover:underline ml-2"
+        class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
         @click="emits('abort')"
         >Anuluj</span
       >
     </div>
     <div class="mb-6">
-      <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      <label for="name" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
         >Przedmiot</label
       >
       <input
@@ -114,14 +116,14 @@ const addSubjectLecturer = () => {
         v-model="editable.name"
         type="text"
         maxlength="255"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
         required
       />
     </div>
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Ilość grup</h2>
     <div
       v-if="classTypes?.member"
-      :class="`grid gap-6 mb-6 grid-cols-${classTypes?.member?.length || '6'}`"
+      :class="`mb-6 grid gap-6 grid-cols-${classTypes?.member?.length || '6'}`"
     >
       <template v-if="classTypes?.member">
         <div v-for="ct in classTypes?.member as ClassType[]" :key="ct.id" class="col-span-1">
@@ -139,7 +141,7 @@ const addSubjectLecturer = () => {
             "
             required
             @input="onAmountChangeGroups(ct['@id'], Number($event.target.value))"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           />
         </div>
       </template>
@@ -147,7 +149,7 @@ const addSubjectLecturer = () => {
     <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Ilość godzin wymaganych</h2>
     <div
       v-if="classTypes?.member"
-      :class="`grid gap-6 mb-6 grid-cols-${classTypes?.member?.length || '6'}`"
+      :class="`mb-6 grid gap-6 grid-cols-${classTypes?.member?.length || '6'}`"
     >
       <template v-if="classTypes?.member">
         <div v-for="ct in classTypes?.member as ClassType[]" :key="ct.id" class="col-span-1">
@@ -164,7 +166,7 @@ const addSubjectLecturer = () => {
               )?.hoursRequired || ''
             "
             @input="onAmountChangeHours(ct['@id'], Number($event.target.value))"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             required
           />
         </div>
@@ -174,13 +176,13 @@ const addSubjectLecturer = () => {
       Przydziały
       <button
         type="button"
-        class="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
+        class="mb-2 me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-800"
         @click="addSubjectLecturer"
       >
         Dodaj
       </button>
     </h2>
-    <div class="grid gap-6 mb-6 grid-cols-[auto_1fr_1fr_auto]">
+    <div class="mb-6 grid grid-cols-[auto_1fr_1fr_auto] gap-6">
       <template
         v-for="(sl, index) in editable.subjectLecturers as (
           | SubjectLecturerCreate
@@ -189,7 +191,7 @@ const addSubjectLecturer = () => {
         :key="index"
       >
         <div>
-          <label for="sl" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <label for="sl" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >Ilość godzin</label
           >
           <input
@@ -197,18 +199,18 @@ const addSubjectLecturer = () => {
             v-model="sl.subjectHours"
             type="number"
             maxlength="255"
-            class="bg-gray-50 border w-full border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             required
           />
         </div>
         <div>
-          <label for="role" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <label for="role" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >Forma zajęć</label
           >
           <select
             v-model="sl.classType"
             name="role"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           >
             <option value="" disabled>Wybierz formę zajęć</option>
             <template v-if="classTypes?.member && classTypes?.member?.length > 0">
@@ -223,13 +225,13 @@ const addSubjectLecturer = () => {
           </select>
         </div>
         <div>
-          <label for="lecturer" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <label for="lecturer" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
             >Wykładowca</label
           >
           <select
             v-model="sl.user"
             name="lecturer"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
           >
             <option value="" disabled>Wybierz wykładowcę</option>
             <template v-if="users?.member && users?.member?.length > 0">
@@ -246,10 +248,10 @@ const addSubjectLecturer = () => {
           </select>
         </div>
 
-        <div class="self-start flex items-center justify-center mt-7">
+        <div class="mt-7 flex items-center justify-center self-start">
           <button
             type="button"
-            class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 me-1 mb-1 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            class="mb-1 me-1 rounded-lg bg-red-700 px-3 py-2 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
             @click="removeLecturer(index)"
           >
             <svg

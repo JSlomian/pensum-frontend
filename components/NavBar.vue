@@ -1,24 +1,24 @@
 <script setup lang="ts">
-const { getSession } = useAuth()
-const user = await getSession()
-const isAdmin = user && user.roles.includes('ROLE_ADMIN')
+  const { getSession } = useAuth()
+  const user = await getSession()
+  const isAdmin = user && user.roles.includes('ROLE_ADMIN')
 </script>
 
 <template>
-  <nav class="bg-white border-gray-200 dark:bg-gray-900">
-    <div class="flex flex-wrap items-center justify-between max-w-screen-xl mx-auto p-4">
+  <nav class="border-gray-200 bg-white dark:bg-gray-900">
+    <div class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
       <NuxtLink to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img
-          class="w-[100px] h-auto p-1"
+          class="h-auto w-[100px] p-1"
           src="/logo.svg"
           style="background: aliceblue"
           alt="Logo UPSL"
         />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+        <span class="self-center whitespace-nowrap text-2xl font-semibold dark:text-white"
           >Pensum</span
         >
       </NuxtLink>
-      <div class="flex items-center md:order-2 space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <div class="flex items-center space-x-1 md:order-2 md:space-x-2 rtl:space-x-reverse">
         <TheSignOut />
         <!--        <a href="#"-->
         <!--           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 md:px-5 md:py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Sign-->
@@ -26,13 +26,13 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
         <button
           data-collapse-toggle="mega-menu-icons"
           type="button"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden"
           aria-controls="mega-menu-icons"
           aria-expanded="false"
         >
           <span class="sr-only">Open main menu</span>
           <svg
-            class="w-5 h-5"
+            class="h-5 w-5"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -50,15 +50,15 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
       </div>
       <div
         id="mega-menu-icons"
-        class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+        class="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto"
       >
         <ul
-          class="flex flex-col mt-4 font-medium md:flex-row md:mt-0 md:space-x-8 rtl:space-x-reverse"
+          class="mt-4 flex flex-col font-medium md:mt-0 md:flex-row md:space-x-8 rtl:space-x-reverse"
         >
           <li>
             <NuxtLink
               href="/"
-              class="block py-2 px-3 text-blue-600 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-blue-500 md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700"
+              class="block border-b border-gray-100 px-3 py-2 text-blue-600 hover:bg-gray-50 dark:border-gray-700 dark:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
               aria-current="page"
               >Strona Główna
             </NuxtLink>
@@ -67,11 +67,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
             <button
               id="mega-menu-icons-dropdown-button"
               data-dropdown-toggle="mega-menu-icons-dropdown"
-              class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700"
+              class="flex w-full items-center justify-between border-b border-gray-100 px-3 py-2 font-medium text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:w-auto md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
             >
               Ustawienia
               <svg
-                class="w-2.5 h-2.5 ms-3"
+                class="ms-3 h-2.5 w-2.5"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -88,16 +88,16 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
             </button>
             <div
               id="mega-menu-icons-dropdown"
-              class="absolute z-10 grid hidden w-auto grid-cols-2 text-sm bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700"
+              class="absolute z-10 grid hidden w-auto grid-cols-2 rounded-lg border border-gray-100 bg-white text-sm shadow-md dark:border-gray-700 dark:bg-gray-700 md:grid-cols-3"
             >
-              <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+              <div class="p-4 pb-0 text-gray-900 dark:text-white md:pb-4">
                 <NuxtLink
                   to="/formy-zajec"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Formy zajęć</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -111,11 +111,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                 </NuxtLink>
                 <NuxtLink
                   to="/stanowiska"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Stanowiska</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -129,11 +129,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                 </NuxtLink>
                 <NuxtLink
                   to="/jednostki-organizacyjne"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Jednostki Organizacyjne</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -146,14 +146,14 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                   Jednostki Organizacyjne
                 </NuxtLink>
               </div>
-              <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+              <div class="p-4 pb-0 text-gray-900 dark:text-white md:pb-4">
                 <NuxtLink
                   to="/kierunki"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Kierunki</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -167,11 +167,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                 </NuxtLink>
                 <NuxtLink
                   to="/programy-na-kierunkach"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Programy na kierunkach</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -185,11 +185,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                 </NuxtLink>
                 <NuxtLink
                   to="/programy"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Programy</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -362,14 +362,14 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
               <!--                  </li>-->
               <!--                </ul>-->
               <!--              </div>-->
-              <div class="p-4 pb-0 text-gray-900 md:pb-4 dark:text-white">
+              <div class="p-4 pb-0 text-gray-900 dark:text-white md:pb-4">
                 <NuxtLink
                   to="/tryby-uczeszczania"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Tryby uczęszczania</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -383,11 +383,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                 </NuxtLink>
                 <NuxtLink
                   to="/poziomy-edukacji"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Poziomy Edukacji</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -401,11 +401,11 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
                 </NuxtLink>
                 <NuxtLink
                   to="/wykladowcy"
-                  class="flex items-center text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-500 group"
+                  class="group flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500"
                 >
                   <span class="sr-only">Wykładowcy</span>
                   <svg
-                    class="w-3 h-3 me-2 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                    class="me-2 h-3 w-3 text-gray-400 group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-500"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
@@ -423,7 +423,7 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
           <li>
             <NuxtLink
               to="/przydzialy-godzin"
-              class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700"
+              class="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
             >
               Przydziały
             </NuxtLink>
@@ -432,7 +432,7 @@ const isAdmin = user && user.roles.includes('ROLE_ADMIN')
             <NuxtLink
               v-if="user"
               :to="`/raport/${user.id}`"
-              class="block py-2 px-3 text-gray-900 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-600 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:dark:hover:bg-transparent dark:border-gray-700"
+              class="block border-b border-gray-100 px-3 py-2 text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue-500 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
             >
               Raport
             </NuxtLink>

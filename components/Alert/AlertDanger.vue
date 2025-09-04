@@ -1,25 +1,25 @@
 <script setup lang="ts">
-defineProps({
-  message: {
-    default: '',
-    required: false,
-    type: String,
-  },
-  title: {
-    default: 'Błąd!',
-    required: false,
-    type: String,
-  },
-})
+  defineProps({
+    message: {
+      default: '',
+      required: false,
+      type: String,
+    },
+    title: {
+      default: 'Błąd!',
+      required: false,
+      type: String,
+    },
+  })
 </script>
 
 <template>
   <div
-    class="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+    class="mb-4 flex items-center rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-gray-800 dark:text-red-400"
     role="alert"
   >
     <svg
-      class="shrink-0 inline w-4 h-4 me-3"
+      class="me-3 inline h-4 w-4 shrink-0"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"

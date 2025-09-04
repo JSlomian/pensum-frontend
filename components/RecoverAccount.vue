@@ -1,36 +1,36 @@
 <script setup lang="ts">
-const sendEmailRoute = '/api/reset-password'
-const email = ref<string>('')
-const emits = defineEmits(['sent'])
-const buttonBlocked = ref<boolean>(false)
-const handleSubmit = async () => {
-  buttonBlocked.value = true
-  const res = await $fetch<{ status: 'sent' | 'error' }>(sendEmailRoute, {
-    method: 'POST',
-    body: { email: email.value },
-  })
+  const sendEmailRoute = '/api/reset-password'
+  const email = ref<string>('')
+  const emits = defineEmits(['sent'])
+  const buttonBlocked = ref<boolean>(false)
+  const handleSubmit = async () => {
+    buttonBlocked.value = true
+    const res = await $fetch<{ status: 'sent' | 'error' }>(sendEmailRoute, {
+      method: 'POST',
+      body: { email: email.value },
+    })
 
-  if (res.status == 'sent') {
-    emits('sent')
-    await showToast('success', 'Wysłano zapytanie')
-  }
+    if (res.status == 'sent') {
+      emits('sent')
+      await showToast('success', 'Wysłano zapytanie')
+    }
 
-  if (res.status == 'error') {
-    await showToast('danger', 'Wystąpił błąd spróbuj ponownie')
+    if (res.status == 'error') {
+      await showToast('danger', 'Wystąpił błąd spróbuj ponownie')
+    }
+    buttonBlocked.value = false
   }
-  buttonBlocked.value = false
-}
 </script>
 
 <template>
   <section class="bg-gray-50 dark:bg-gray-900">
-    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
       <NuxtLink
         to="/"
-        class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+        class="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white"
       >
         <img
-          class="w-24 h-16 mr-4 p-2"
+          class="mr-4 h-16 w-24 p-2"
           style="background: aliceblue"
           src="/logo.svg"
           alt="Logo UPSL"
@@ -38,10 +38,10 @@ const handleSubmit = async () => {
         Pensum
       </NuxtLink>
       <div
-        class="w-full p-6 bg-gray-50-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md dark:bg-gray-800 dark:border-gray-700 sm:p-8"
+        class="bg-gray-50-white w-full rounded-lg p-6 shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md sm:p-8 md:mt-0"
       >
         <h1
-          class="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
+          class="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl"
         >
           Ustaw nowe hasło
         </h1>
@@ -49,12 +49,12 @@ const handleSubmit = async () => {
           Wpisz email aby ustawić nowe hasło
         </p>
         <form
-          class="mt-4 space-y-4 lg:mt-5 md:space-y-5"
+          class="mt-4 space-y-4 md:space-y-5 lg:mt-5"
           method="post"
           @submit.prevent="handleSubmit"
         >
           <div>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
               >Twój email</label
             >
             <input
@@ -62,7 +62,7 @@ const handleSubmit = async () => {
               v-model="email"
               type="email"
               name="email"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
               placeholder="inazwisko@upsl.edu.pl"
               required
               :disabled="buttonBlocked"
@@ -78,7 +78,7 @@ const handleSubmit = async () => {
 </div> -->
           <button
             type="submit"
-            class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            class="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
           >
             Resetuj hasło
           </button>

@@ -1,89 +1,109 @@
 <script setup lang="ts">
+  const { signIn } = useAuth()
+  const router = useRouter()
+  definePageMeta({
+    layout: 'login',
+    auth: {
+      unauthenticatedOnly: true,
+      navigateAuthenticatedTo: '/',
+    },
+  })
+  const email = ref('')
+  const password = ref('')
+  const error = ref('')
 
-
-const {signIn} = useAuth()
-const router = useRouter()
-definePageMeta({
-  layout: 'login',
-  auth: {
-    unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/'
-  }
-})
-const email = ref("")
-const password = ref("")
-const error = ref("")
-
-const handleSubmit = async () => {
-  try {
-    await signIn({
+  const handleSubmit = async () => {
+    try {
+      await signIn(
+        {
           email: email.value,
-          password: password.value
+          password: password.value,
         },
         {
-          redirect: false
+          redirect: false,
         }
-    )
-    await router.push('/')
-  } catch (err: any) {
-    let apiError = 'Nie udało się zalogować'
-    console.log(err)
-    // if (res.response.status === 401) {
+      )
+      await router.push('/')
+    } catch (err: any) {
+      let apiError = 'Nie udało się zalogować'
+      console.log(err)
+      // if (res.response.status === 401) {
       apiError = apiError + ', nieprawidłowe hasło lub login.'
-    // }
-    await showToast('danger', apiError)
+      // }
+      await showToast('danger', apiError)
+    }
   }
-}
-
-
 </script>
 
 <template>
   <section class="bg-gray-50 dark:bg-gray-900">
-    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-      <NuxtLink to="/" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-        <img class="w-24 h-16 mr-4 p-2" style="background: aliceblue" src="/logo.svg" alt="Logo UPSL">
+    <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
+      <NuxtLink
+        to="/"
+        class="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white"
+      >
+        <img
+          class="mr-4 h-16 w-24 p-2"
+          style="background: aliceblue"
+          src="/logo.svg"
+          alt="Logo UPSL"
+        />
         Pensum
       </NuxtLink>
       <div
-          class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+        class="w-full rounded-lg bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:mt-0 xl:p-0"
+      >
+        <div class="space-y-4 p-6 sm:p-8 md:space-y-6">
+          <h1
+            class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl"
+          >
             Zaloguj się
           </h1>
           <form class="space-y-4 md:space-y-6" @submit.prevent="handleSubmit">
             <div>
-              <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Twój Email</label>
-              <input v-model="email" type="email" name="email" id="email"
-                     class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                     placeholder="inazwisko@upsl.edu.pl" required>
+              <label
+                for="email"
+                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >Twój Email</label
+              >
+              <input
+                id="email"
+                v-model="email"
+                type="email"
+                name="email"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                placeholder="inazwisko@upsl.edu.pl"
+                required
+              />
             </div>
             <div>
-              <label for="password"
-                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hasło</label>
-              <input v-model="password" type="password" name="password" id="password" placeholder="••••••••"
-                     class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                     required>
+              <label
+                for="password"
+                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >Hasło</label
+              >
+              <input
+                id="password"
+                v-model="password"
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                required
+              />
             </div>
-            <!--                  <div class="flex items-center justify-between">-->
-            <!--                      <div class="flex items-start">-->
-            <!--                          <div class="flex items-center h-5">-->
-            <!--                            <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">-->
-            <!--                          </div>-->
-            <!--                          <div class="ml-3 text-sm">-->
-            <!--                            <label for="remember" class="text-gray-500 dark:text-gray-300">Remember me</label>-->
-            <!--                          </div>-->
-            <!--                      </div>-->
-            <!--                      <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>-->
-            <!--                  </div>-->
-            <button type="submit"
-                    class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+            <button
+              type="submit"
+              class="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            >
               Zaloguj
             </button>
             <p class="text-sm font-light text-gray-500 dark:text-gray-400">
               Nie pamiętasz hasła?
-              <NuxtLink to="/odzyskiwanie-konta"
-                        class="font-medium text-primary-600 hover:underline dark:text-primary-500">Odzyskaj konto
+              <NuxtLink
+                to="/odzyskiwanie-konta"
+                class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >Odzyskaj konto
               </NuxtLink>
             </p>
           </form>
@@ -93,6 +113,4 @@ const handleSubmit = async () => {
   </section>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
