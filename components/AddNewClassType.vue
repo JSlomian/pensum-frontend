@@ -9,34 +9,34 @@
   const type = ref<string>('')
   const abbreviation = ref<string>('')
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
   const handleSubmit = async () => {
-    try {
-      await callPost({
+    await usePost(props.route).callPost(
+      {
         type: type.value,
         abbreviation: abbreviation.value,
-      } satisfies ClassTypeCreate)
-      await showToast('success', `Dodano nową formę zajęć ${type.value}`)
-      emit('success')
-      type.value = ''
-      abbreviation.value = ''
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {
-      hasErrors.value = true
-      await showToast('danger', `Nie udało się dodać ${type.value}`)
-    }
+      } satisfies ClassTypeCreate,
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', `Dodano nową formę zajęć ${type.value}`)
+            emit('success')
+            abortAddNew()
+          }
+        },
+        onResponseError() {
+          showToast('danger', `Nie udało się dodać ${type.value}`)
+        }
+      }
+    )
   }
 
   const abortAddNew = () => {
     type.value = ''
     abbreviation.value = ''
     addNew.value = false
-    hasErrors.value = false
   }
 </script>
 

@@ -20,8 +20,6 @@
   const educationLevelIri = ref<string>('')
   const attendanceModeIri = ref<string>('')
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
@@ -38,28 +36,27 @@
   })
 
   const handleSubmit = async () => {
-    try {
-      const res = await callPost({
+    await usePost(props.route).callPost(
+      {
         major: majorIri.value,
         educationLevel: educationLevelIri.value,
         attendanceMode: attendanceModeIri.value,
-      } satisfies ProgramInMajorCreate)
-      if (res.statusCode) {
-        hasErrors.value = true
-        await showToast('danger', `Nie udało się dodać.`)
-        if (res.statusCode === 422) {
-          await showToast('danger', `Taka kombinacja już istnieje.`)
-        }
-      } else {
-        await showToast('success', `Dodano nowy program.`)
-        emit('success')
+      } satisfies ProgramInMajorCreate,
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', `Dodano nowy program.`)
+            emit('success')
+            abortAddNew()
+          }
+        },
+        onResponseError({ response }: { response: Response }) {
+          if (response.status === 422) {
+            showToast('danger', `Taka kombinacja już istnieje.`)
+          }
+        },
       }
-      majorIri.value = major.value!.member[0]['@id']
-      educationLevelIri.value = educationLevel.value!.member[0]['@id']
-      attendanceModeIri.value = attendanceMode.value!.member[0]['@id']
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {}
+    )
   }
 
   const abortAddNew = () => {
@@ -67,7 +64,6 @@
     educationLevelIri.value = educationLevel.value!.member[0]['@id']
     attendanceModeIri.value = attendanceMode.value!.member[0]['@id']
     addNew.value = false
-    hasErrors.value = false
   }
 </script>
 

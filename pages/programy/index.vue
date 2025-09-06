@@ -12,8 +12,6 @@
   const { data, refresh } = await useFetch<{ member: Program[] }>(route)
   const { data: pims } = await useFetch<{ member: Major[] }>(pimsRoute)
 
-  const { callUpdate } = useUpdate(route)
-  const { callDelete } = useDelete(route)
   const editId = ref<number>(0)
   const editPimIri = ref<string>('')
   const deleteId = ref<number>(0)
@@ -30,35 +28,38 @@
   }
 
   const handleDelete = async (id: number): Promise<void> => {
-    let prog: Program | undefined
-    try {
-      prog = data.value?.member.find((m: Program) => m.id === id)
-      if (!prog) {
-        await showToast('danger', 'Przekazano id do nieistniejącej pozycji')
-        modalOpen.value = false
-        return
-      }
-      const res = await callDelete(prog.id)
-      if (res.data?.value?.statusCode) {
-        return
-      }
-      await refresh()
-      showToast('success', `Usunięto`)
-    } catch (e) {
-      showToast('danger', `Nie udało się usunąć.`)
-    } finally {
+    const prog: Program | undefined = data.value?.member.find((m: Program) => m.id === id)
+    if (!prog) {
+      showToast('danger', 'Przekazano id do nieistniejącej pozycji')
       modalOpen.value = false
+      return
     }
+    await useDelete(route).callDelete(prog.id, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          refresh()
+          showToast('success', `Usunięto`)
+        }
+      },
+      onResponseError({ response }: { response: Response }) {
+        showToast('danger', `Nie udało się usunąć.`)
+      },
+    })
+    modalOpen.value = false
   }
 
-  const handleUpdate = (prog: Program): void => {
-    try {
-      callUpdate(prog)
-      handleCancelEdit()
-      showToast('success', `Zaktualizowano`)
-    } catch (e) {
-      showToast('danger', `Nie udało się zaktualizować.`)
-    }
+  const handleUpdate = async (prog: Program): Promise<void> => {
+    await usePost(route).callUpdate(prog, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          handleCancelEdit()
+          showToast('success', `Zaktualizowano`)
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się zaktualizować.`)
+      },
+    })
   }
 
   const handleCancelEdit = (): void => {
@@ -82,88 +83,95 @@
 </script>
 <template>
   <div>
-  <ModalDelete
-    :open="modalOpen"
-    :text="modalText"
-    @confirm="handleDelete(deleteId)"
-    @abort="modalOpen = false"
-  />
-  <div class="container relative mx-auto overflow-x-auto p-6 shadow-md sm:rounded-lg">
-    <AlertWarning
-      v-if="!requiredFilled"
-      message="Musisz posiadać dostępne programy na kierunkach"
+    <ModalDelete
+      :open="modalOpen"
+      :text="modalText"
+      @confirm="handleDelete(deleteId)"
+      @abort="modalOpen = false"
     />
-    <AddNewProgram v-if="requiredFilled" :route="route" @success="refresh" />
-    <div v-if="requiredFilled" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table
-        v-if="data?.member && data?.member?.length > 0"
-        class="w-full text-left text-sm text-gray-500 dark:text-gray-400 md:table-fixed rtl:text-right"
-      >
-        <thead
-          class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+    <div class="container relative mx-auto overflow-x-auto p-6 shadow-md sm:rounded-lg">
+      <AlertWarning
+        v-if="!requiredFilled"
+        message="Musisz posiadać dostępne programy na kierunkach"
+      />
+      <AddNewProgram v-if="requiredFilled" :route="route" @success="refresh" />
+      <div v-if="requiredFilled" class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table
+          v-if="data?.member && data?.member?.length > 0"
+          class="w-full text-left text-sm text-gray-500 dark:text-gray-400 md:table-fixed rtl:text-right"
         >
-          <tr>
-            <th scope="col" class="px-6 py-3">Kierunek</th>
-            <th scope="col" class="px-6 py-3">Semestr</th>
-            <th scope="col" class="px-6 py-3">Rok</th>
-            <th scope="col" class="px-6 py-3">
-              <span class="sr-only">Action</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="prog in data?.member as Program[]"
-            :key="prog.id"
-            class="border-b border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
+          <thead
+            class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
           >
-            <th
-              scope="row"
-              class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
+            <tr>
+              <th scope="col" class="px-6 py-3">Kierunek</th>
+              <th scope="col" class="px-6 py-3">Semestr</th>
+              <th scope="col" class="px-6 py-3">Rok</th>
+              <th scope="col" class="px-6 py-3">
+                <span class="sr-only">Action</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="prog in data?.member as Program[]"
+              :key="prog.id"
+              class="border-b border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
             >
-              <span>
-                {{ prog.programInMajors.major?.abbreviation }}-{{
-                  prog.programInMajors.educationLevel.abbreviation
-                }}-{{ prog.programInMajors.attendanceMode.abbreviation }}
-              </span>
-            </th>
-            <td class="px-6 py-4">
-              {{ prog.semester }}
-            </td>
-            <td class="px-6 py-4">
-              {{ prog.planYear }}
-            </td>
-            <td class="px-6 py-4 text-right">
-              <div v-if="editId === prog.id">
-                <span
-                  class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
-                  @click="handleUpdate(prog)"
-                  >Zapisz</span
-                >
-                <span
-                  class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
-                  @click="handleCancelEdit"
-                  >Anuluj</span
-                >
-              </div>
-              <div v-else>
-                <span
-                  class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
-                  @click="openDeleteModal(prog)"
-                  >Usuń</span
-                >
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <th
+                scope="row"
+                class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
+              >
+                <span>
+                  {{ prog.programInMajors.major?.abbreviation }}-{{
+                    prog.programInMajors.educationLevel.abbreviation
+                  }}-{{ prog.programInMajors.attendanceMode.abbreviation }}
+                </span>
+              </th>
+              <td class="px-6 py-4">
+                {{ prog.semester }}
+              </td>
+              <td class="px-6 py-4">
+                {{ prog.planYear }}
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div v-if="editId === prog.id">
+                  <span
+                    class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
+                    @click="handleUpdate(prog)"
+                    >Zapisz</span
+                  >
+                  <span
+                    class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
+                    @click="handleCancelEdit"
+                    >Anuluj</span
+                  >
+                </div>
+                <div v-else>
+                  <NuxtLink
+                    class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
+                    :to="`/przydzialy-godzin/przedmioty/${prog.id}`"
+                  >
+                    Przydziały
+                  </NuxtLink>
+                  <span
+                    class="ml-2 font-medium text-blue-600 hover:underline dark:text-blue-500"
+                    @click="openDeleteModal(prog)"
+                  >
+                    Usuń
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <AlertWarning
+        v-if="data?.member && data?.member?.length == 0"
+        message="Brak dostępnych programów, dodaj nowy."
+      />
     </div>
-    <AlertWarning
-      v-if="data?.member && data?.member?.length == 0"
-      message="Brak dostępnych programów, dodaj nowy."
-    />
   </div>
-    </div>
 </template>
 
 <style scoped></style>

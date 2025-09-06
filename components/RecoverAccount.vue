@@ -5,19 +5,22 @@
   const buttonBlocked = ref<boolean>(false)
   const handleSubmit = async () => {
     buttonBlocked.value = true
-    const res = await $fetch<{ status: 'sent' | 'error' }>(sendEmailRoute, {
-      method: 'POST',
-      body: { email: email.value },
-    })
-
-    if (res.status == 'sent') {
-      emits('sent')
-      await showToast('success', 'Wysłano zapytanie')
-    }
-
-    if (res.status == 'error') {
-      await showToast('danger', 'Wystąpił błąd spróbuj ponownie')
-    }
+    await usePost(sendEmailRoute).callPost(
+      {
+        email: email.value,
+      },
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', 'Wysłano zapytanie')
+            emits('sent')
+          }
+        },
+        onResponseError() {
+          showToast('danger', 'Wystąpił błąd.')
+        },
+      }
+    )
     buttonBlocked.value = false
   }
 </script>

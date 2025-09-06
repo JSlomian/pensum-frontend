@@ -17,8 +17,6 @@
   const instituteIri = ref<string>('')
   const positionIri = ref<string>('')
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
@@ -32,29 +30,28 @@
   })
 
   const handleSubmit = async (): Promise<void> => {
-    try {
-      await callPost({
+    await usePost(props.route).callPost(
+      {
         first_name: firstName.value,
         last_name: lastName.value,
         email: email.value,
         roles: [role.value],
         institute: instituteIri.value,
         position: positionIri.value,
-      } satisfies ApiUserCreate)
-      await showToast('success', `Dodano nowego użytkownika ${firstName.value} ${lastName.value}`)
-      emit('success')
-      firstName.value = ''
-      lastName.value = ''
-      email.value = ''
-      role.value = 'ROLE_USER'
-      instituteIri.value = institutes.value!.member[0]['@id']
-      positionIri.value = positions.value!.member[0]['@id']
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {
-      hasErrors.value = true
-      await showToast('danger', `Nie udało się dodać ${firstName.value} ${lastName.value}`)
-    }
+      } satisfies ApiUserCreate,
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', `Dodano nowego użytkownika ${firstName.value} ${lastName.value}`)
+            emit('success')
+            abortAddNew()
+          }
+        },
+        onResponseError() {
+          showToast('danger', `Nie udało się dodać ${firstName.value} ${lastName.value}`)
+        },
+      }
+    )
   }
 
   const abortAddNew = () => {
@@ -65,7 +62,6 @@
     instituteIri.value = institutes.value!.member[0]['@id']
     positionIri.value = positions.value!.member[0]['@id']
     addNew.value = false
-    hasErrors.value = false
   }
 
   const positionChosenWhileEditing = computed(() => {

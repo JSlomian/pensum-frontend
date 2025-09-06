@@ -7,39 +7,41 @@
     },
   })
 
-  const {
-    public: { api_url },
-  } = useRuntimeConfig()
+  const sendButtonActive = ref<boolean>(true)
   const pass1 = ref<string>('')
   const pass2 = ref<string>('')
-
   const handleForm = async (): Promise<void> => {
-    const route = `${api_url}/reset-password/reset/${props.token}`
-    try {
-      const res = await fetch(route, {
-        method: 'POST',
-        body: JSON.stringify({ plainPassword: pass1.value }),
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+    sendButtonActive.value = false
+    const route = `/api/reset-password/reset/${props.token}`
+    await usePost(route).callPost(
+      {
+        plainPassword: pass1.value,
+      },
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', 'Hasło zmienione')
+            setTimeout(() => {
+              navigateTo('/login')
+            }, 4000)
+          }
         },
-      })
-      if (res.status === 400) {
-        showToast('danger', 'Brak tokenu')
+        onResponseError({ response }: { response: Response }) {
+          if (response.status === 400) {
+            showToast('danger', 'Brak tokenu')
+            return
+          }
+          if (response.status === 409) {
+            showToast('danger', 'Błąd walidacji tokenu')
+            return
+          }
+          showToast('danger', 'Wystąpił błąd.')
+        },
       }
-      if (res.status === 409) {
-        showToast('danger', 'Błąd walidacji tokenu')
-      }
-      if (res.status === 200) {
-        showToast('success', 'Hasło zmienione')
-        setTimeout(() => {
-          navigateTo('/login')
-        }, 4000)
-      }
-    } catch (e) {}
+    )
   }
   const isSubmitDisabled = computed(
-    () => !pass1.value || !pass2.value || pass1.value !== pass2.value
+    () => !pass1.value || !pass2.value || pass1.value !== pass2.value || !sendButtonActive.value
   )
 </script>
 
@@ -113,6 +115,7 @@
           <button
             v-if="isSubmitDisabled"
             type="submit"
+            disabled
             class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
           >
             Zresetuj hasło

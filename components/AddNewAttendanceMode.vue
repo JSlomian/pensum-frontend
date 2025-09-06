@@ -9,34 +9,34 @@
   const name = ref<string>('')
   const abbreviation = ref<string>('')
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
   const handleSubmit = async () => {
-    try {
-      await callPost({
+    await usePost(props.route).callPost(
+      {
         name: name.value,
         abbreviation: abbreviation.value,
-      } satisfies AttendanceModeCreate)
-      await showToast('success', `Dodano nowy tryb uczęszczania ${name.value}`)
-      emit('success')
-      name.value = ''
-      abbreviation.value = ''
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {
-      hasErrors.value = true
-      await showToast('danger', `Nie udało się dodać ${name.value}`)
-    }
+      } satisfies AttendanceModeCreate,
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', `Dodano nowy tryb uczęszczania ${name.value}`)
+            emit('success')
+            abortAddNew()
+          }
+        },
+        onResponseError() {
+          showToast('danger', `Nie udało się dodać ${name.value}`)
+        }
+      }
+    )
   }
 
   const abortAddNew = () => {
     name.value = ''
     abbreviation.value = ''
     addNew.value = false
-    hasErrors.value = false
   }
 </script>
 

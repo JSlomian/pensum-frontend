@@ -2,42 +2,43 @@
   const props = defineProps<{
     programId: number
   }>()
-  const route = '/api/subjects'
+  const route = '/api/import-subjects'
   const name = ref<string>('')
-  const program = ref<string>(`/programs/${props.programId}`)
+  const programToCopyId = ref<number>(0)
   const addNew = ref<boolean>(false)
+  const { data: programs } = await useFetch<{ member: Program[] }>('/api/programs')
 
-  const emit = defineEmits(['success', 'hide-import', 'abort'])
+  const emit = defineEmits(['success', 'hide-add-new', 'abort'])
 
   const handleSubmit = async () => {
     await usePost(route).callPost(
       {
-        name: name.value,
-        program: program.value,
-      } satisfies SubjectCreate,
+        currentProgram: props.programId,
+        programToImport: programToCopyId.value,
+      } satisfies {currentProgram: number, programToImport: number},
       {
         onResponse({ response }: { response: Response }) {
           if (response.ok) {
-            showToast('success', `Dodano nowy przedmiot ${name.value}`)
+            showToast('success', `Zaimportowano ${response._data.copied}`)
             emit('success')
-            abortAddNew()
+            name.value = ''
+            addNew.value = false
           }
         },
         onResponseError() {
-          showToast('danger', `Nie udało się dodać ${name.value}`)
+          showToast('danger', `Nie udało się zaimportować`)
         },
       }
     )
   }
-
   const abortAddNew = () => {
     name.value = ''
     addNew.value = false
     emit('abort')
   }
-  const addButtonClick = () => {
+  const importButtonClick = () => {
     addNew.value = !addNew.value
-    emit('hide-import')
+    emit('hide-add-new')
   }
 </script>
 
@@ -47,9 +48,9 @@
     <button
       type="button"
       class="mb-2 me-2 rounded-lg border border-green-700 px-5 py-2.5 text-center text-sm font-medium text-green-700 hover:bg-green-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:bg-green-600 dark:hover:text-white dark:focus:ring-green-800"
-      @click="addButtonClick"
+      @click="importButtonClick"
     >
-      Dodaj nowy przedmiot
+      Importuj przydziały
     </button>
   </div>
 
@@ -59,23 +60,32 @@
     class="mb-5 w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6 md:p-8"
   >
     <div class="space-y-6">
-      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Dodaj nowy przedmiot</h5>
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Wybierz program z którego importować przydziały</h5>
       <div class="group relative z-0 mb-5 w-full">
-        <input
-          id="name"
-          v-model="name"
-          type="text"
-          maxlength="255"
-          class="peer block w-full appearance-none border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-0 dark:border-gray-600 dark:text-white dark:focus:border-blue-500"
-          placeholder=" "
+        <label for="underline_select" class="sr-only">Wybierz program na kierunku</label>
+        <select
+          id="underline_select"
+          v-model="programToCopyId"
           required
-        />
-        <label
-          for="name"
-          class="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-gray-500 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:start-0 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:font-medium peer-focus:text-blue-600 dark:text-gray-400 peer-focus:dark:text-blue-500 rtl:peer-focus:translate-x-1/4"
+          class="peer block w-full appearance-none border-0 border-b-2 border-gray-200 bg-transparent px-0 py-2.5 text-sm text-gray-500 focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 dark:text-gray-400"
         >
-          Pełna Nazwa
-        </label>
+          <template v-if="programs?.member && programs?.member?.length > 0">
+            <option
+              v-for="prog in programs?.member as Program[]"
+              :key="prog['@id']"
+              :value="prog['id']"
+            >
+              {{
+                prog.programInMajors.major.abbreviation +
+                '-' +
+                prog.programInMajors.educationLevel.abbreviation +
+                '-' +
+                prog.programInMajors.attendanceMode.abbreviation
+              }}
+              Sem: {{ prog.semester }} Rok: {{ prog.planYear }}({{ prog.syllabusYear }})
+            </option>
+          </template>
+        </select>
       </div>
       <div class="mt-4 flex justify-end">
         <button

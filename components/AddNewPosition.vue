@@ -15,26 +15,22 @@
   })
 
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
   const handleSubmit = async () => {
-    try {
-      await callPost(position satisfies PositionCreate)
-      await showToast('success', `Dodano nowe stanowisko ${position.title}`)
-      emit('success')
-      position.title = ''
-      position.description = ''
-      position.pensum = null
-      position.abbreviation = ''
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {
-      hasErrors.value = true
-      await showToast('danger', `Nie udało się dodać ${position.title}`)
-    }
+    await usePost(props.route).callPost(position satisfies PositionCreate, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Dodano nowe stanowisko ${position.title}`)
+          emit('success')
+          abortAddNew()
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się dodać ${position.title}`)
+      },
+    })
   }
 
   const abortAddNew = () => {
@@ -43,7 +39,6 @@
     position.pensum = null
     position.abbreviation = ''
     addNew.value = false
-    hasErrors.value = false
   }
 </script>
 

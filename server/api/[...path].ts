@@ -33,8 +33,8 @@ export default defineEventHandler(async (event) => {
       headers: outHeaders,
     })
   } catch (error: any) {
-    console.error('Proxy error:', error)
-
+    const status = error?.response?.status ?? error?.statusCode ?? 500
+    setResponseStatus(event, status)
     return {
       statusCode: error?.response?.status || 500,
       message: error?.message || 'An error occurred while proxying the request',

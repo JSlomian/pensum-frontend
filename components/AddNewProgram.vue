@@ -13,8 +13,6 @@
   const syllabusYear = ref<number>(new Date().getFullYear())
   const semester = ref<number>(1)
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
@@ -25,33 +23,34 @@
   })
 
   const handleSubmit = async () => {
-    try {
-      const res = await callPost({
+    await usePost(props.route).callPost(
+      {
         programInMajors: pimIri.value,
         semester: semester.value,
         planYear: planYear.value,
         syllabusYear: syllabusYear.value,
-      } satisfies ProgramCreate)
-      if (res.data.value.statusCode) {
-        hasErrors.value = true
-        await showToast('danger', `Nie udało się dodać.`)
-        if (res.data.value.statusCode === 422) {
-          await showToast('danger', `Taka kombinacja już istnieje.`)
-        }
-      } else {
-        await showToast('success', `Dodano nowy program.`)
-        emit('success')
+      } satisfies ProgramCreate,
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            abortAddNew()
+            emit('success')
+            showToast('success', `Dodano nowy program.`)
+          }
+        },
+        onResponseError({ response }: { response: Response }) {
+          if (response.status === 422) {
+            showToast('danger', `Taka kombinacja już istnieje.`)
+          }
+          showToast('danger', `Nie udało się dodać.`)
+        },
       }
-      pimIri.value = pims.value!.member[0]['@id']
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {}
+    )
   }
 
   const abortAddNew = () => {
     pimIri.value = pims.value!.member[0]['@id']
     addNew.value = false
-    hasErrors.value = false
   }
 </script>
 

@@ -12,8 +12,6 @@
   const abbreviation = ref<string>('')
   const instituteIri = ref<string>('')
   const addNew = ref<boolean>(false)
-  const hasErrors = ref<boolean>(false)
-  const { callPost } = usePost(props.route)
 
   const emit = defineEmits(['success'])
 
@@ -24,23 +22,25 @@
   })
 
   const handleSubmit = async () => {
-    try {
-      await callPost({
+    await usePost(props.route).callPost(
+      {
         name: name.value,
         abbreviation: abbreviation.value,
         institute: instituteIri.value,
-      } satisfies MajorCreate)
-      await showToast('success', `Dodano nowy kierunek ${name.value}`)
-      emit('success')
-      name.value = ''
-      abbreviation.value = ''
-      instituteIri.value = data.value!.member[0]['@id']
-      addNew.value = false
-      hasErrors.value = false
-    } catch (e) {
-      hasErrors.value = true
-      await showToast('danger', `Nie udało się dodać ${name.value}`)
-    }
+      } satisfies MajorCreate,
+      {
+        onResponse({ response }: { response: Response }) {
+          if (response.ok) {
+            showToast('success', `Dodano nowy kierunek ${name.value}`)
+            emit('success')
+            abortAddNew()
+          }
+        },
+        onResponseError() {
+          showToast('danger', `Nie udało się dodać ${name.value}`)
+        },
+      }
+    )
   }
 
   const abortAddNew = () => {
@@ -48,7 +48,6 @@
     abbreviation.value = ''
     instituteIri.value = data.value!.member[0]['@id']
     addNew.value = false
-    hasErrors.value = false
   }
 </script>
 
