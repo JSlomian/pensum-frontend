@@ -1,5 +1,3 @@
-<!-- eslint-disable vue/attributes-order -->
-<!-- eslint-disable vue/no-multiple-template-root -->
 <script setup lang="ts">
   const route = '/api/institutes'
   useHead({
@@ -12,48 +10,49 @@
 
   const { data, refresh } = await useFetch<{ member: Institute[] }>(route)
 
-  const { callUpdate } = useUpdate(route)
-  const { callDelete } = useDelete(route)
   const editId = ref<number>(0)
   const deleteId = ref<number>(0)
   const modalOpen = ref<boolean>(false)
   const modalText = ref<string>('')
 
-  const cancelEdit = (): void => {
-    editId.value = 0
-  }
-
-  const handleDelete = (id: number): void => {
-    let unit: Institute | undefined
-    try {
-      unit = data.value?.member.find((i: Institute) => i.id === id)
-      if (!unit) {
-        showToast('danger', 'Przekazano id do nieistniejącej pozycji')
-        modalOpen.value = false
-        return
-      }
-      callDelete(unit.id)
+  const handleDelete = async (id: number): Promise<void> => {
+    const unit: Institute | undefined = data.value?.member.find((i: Institute) => i.id === id)
+    if (!unit) {
+      showToast('danger', 'Przekazano id do nieistniejącej pozycji')
       modalOpen.value = false
-      refresh()
-      showToast('success', `Usunięto ${unit.name}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się usunąć.`)
+      return
     }
+    await useDelete(route).callDelete(unit.id, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Usunięto ${unit.name}`)
+          handleCancelEdit()
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się usunąć.`)
+      },
+    })
   }
 
-  const handleUpdate = (unit: Institute): void => {
-    try {
-      callUpdate(unit)
-      handleCancelEdit()
-      showToast('success', `Zaktualizowano ${unit.name}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się zaktualizować.`)
-    }
+  const handleUpdate = async (unit: Institute): Promise<void> => {
+    await useUpdate(route).callUpdate(unit, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Zaktualizowano ${unit.name}`)
+          handleCancelEdit()
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się zaktualizować.`)
+      },
+    })
   }
 
   const handleCancelEdit = (): void => {
-    cancelEdit()
+    editId.value = 0
     refresh()
+    modalOpen.value = false
   }
 
   const openDeleteModal = (unit: Institute): void => {

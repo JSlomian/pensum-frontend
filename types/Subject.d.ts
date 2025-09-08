@@ -6,8 +6,8 @@ declare global {
         id: number,
         name: string,
         program: Program,
-        subjectHours: SubjectHours[],
-        subjectGroups: SubjectGroup[],
+        subjectHours: (SubjectHours | SubjectHoursCreate)[],
+        subjectGroups: (SubjectGroup | SubjectGroupCreate)[],
         subjectLecturers: (SubjectLecturer | SubjectLecturerCreate)[]
     }
 

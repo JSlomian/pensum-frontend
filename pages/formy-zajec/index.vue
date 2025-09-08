@@ -9,48 +9,49 @@
   })
 
   const { data, refresh } = await useFetch<{ member: ClassType[] }>(route)
-  const { callUpdate } = useUpdate(route)
-  const { callDelete } = useDelete(route)
   const editId = ref<number>(0)
   const deleteId = ref<number>(0)
   const modalOpen = ref<boolean>(false)
   const modalText = ref<string>('')
 
-  const cancelEdit = (): void => {
-    editId.value = 0
-  }
-
   const handleDelete = async (id: number): Promise<void> => {
-    let ct: ClassType | undefined // Declare ct in an outer scope
-    try {
-      ct = data.value?.member.find((c: ClassType) => c.id === id)
-      if (!ct) {
-        showToast('danger', 'Przekazano id do nieistniejącej pozycji')
-        modalOpen.value = false
-        return
-      }
-      await callDelete(ct.id)
+    const ct: ClassType | undefined = data.value?.member.find((c: ClassType) => c.id === id)
+    if (!ct) {
+      showToast('danger', 'Przekazano id do nieistniejącej pozycji')
       modalOpen.value = false
-      refresh()
-      showToast('success', `Usunięto ${ct.type}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się usunąć.`)
+      return
     }
+    await useDelete(route).callDelete(ct.id, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Usunięto ${ct.type}`)
+          handleCancelEdit()
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się usunąć.`)
+      },
+    })
   }
 
   const handleUpdate = async (classType: ClassType): Promise<void> => {
-    try {
-      await callUpdate(classType)
-      handleCancelEdit()
-      showToast('success', `Zaktualizowano ${classType.type}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się zaktualizować.`)
-    }
+    await useUpdate(route).callUpdate(classType, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Zaktualizowano ${classType.type}`)
+          handleCancelEdit()
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się zaktualizować.`)
+      },
+    })
   }
 
   const handleCancelEdit = (): void => {
-    cancelEdit()
+    editId.value = 0
     refresh()
+    modalOpen.value = false
   }
 
   const openDeleteModal = (classType: ClassType): void => {
@@ -112,7 +113,7 @@
                   v-if="editId === classType.id"
                   v-model="classType.abbreviation"
                   type="text"
-                  maxlength="10"
+                  maxlength="5"
                   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                 />
                 <span v-else>

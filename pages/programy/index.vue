@@ -18,15 +18,6 @@
   const modalOpen = ref<boolean>(false)
   const modalText = ref<string>('')
 
-  const startEdit = (prog: Program) => {
-    editId.value = prog.id
-  }
-
-  const cancelEdit = (): void => {
-    editId.value = 0
-    editPimIri.value = ''
-  }
-
   const handleDelete = async (id: number): Promise<void> => {
     const prog: Program | undefined = data.value?.member.find((m: Program) => m.id === id)
     if (!prog) {
@@ -37,11 +28,11 @@
     await useDelete(route).callDelete(prog.id, {
       onResponse({ response }: { response: Response }) {
         if (response.ok) {
-          refresh()
           showToast('success', `Usunięto`)
+          handleCancelEdit()
         }
       },
-      onResponseError({ response }: { response: Response }) {
+      onResponseError() {
         showToast('danger', `Nie udało się usunąć.`)
       },
     })
@@ -49,7 +40,7 @@
   }
 
   const handleUpdate = async (prog: Program): Promise<void> => {
-    await usePost(route).callUpdate(prog, {
+    await useUpdate(route).callUpdate(prog, {
       onResponse({ response }: { response: Response }) {
         if (response.ok) {
           handleCancelEdit()
@@ -63,7 +54,8 @@
   }
 
   const handleCancelEdit = (): void => {
-    cancelEdit()
+    editId.value = 0
+    editPimIri.value = ''
     refresh()
   }
 

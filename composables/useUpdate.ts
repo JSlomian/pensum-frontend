@@ -6,7 +6,7 @@ export const useUpdate = (route: string) => {
         route = route + '/'
     }
     const callUpdate = async ({id, ...rest}: { id: number; [key: string]: any }, opts?: UseFetchOptions): Promise<unknown> => {
-        return useFetch(`${route}${id}`, {
+        return $fetch(`${route}${id}`, {
             method: 'PATCH',
             headers: {
                 'accept': 'application/ld+json',

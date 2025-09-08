@@ -16,7 +16,6 @@
   )
 
   const emits = defineEmits(['abort', 'success'])
-  const { callUpdate } = useUpdate(props.route)
   const editUnitIri = ref<string>(editable.institute?.['@id'] || '')
   const editPosIri = ref<string>(editable.position?.['@id'] || '')
   const roleSelect = ref<string>(editable.roles[0] || 'ROLE_USER')
@@ -27,21 +26,25 @@
     return positions.value?.member?.find((p: Position) => p['@id'] === editPosIri.value)
   })
 
-  const handleUpdate = (user: ApiUser): void => {
-    try {
-      const updatedUser = {
-        ...user,
-        roles: [roleSelect.value],
-        institute: editUnitIri.value || '',
-        position: editPosIri.value || '',
-      } satisfies ApiUserCreate
+  const handleUpdate = async (user: ApiUser): Promise<void> => {
+    const updatedUser = {
+      ...user,
+      roles: [roleSelect.value],
+      institute: editUnitIri.value || '',
+      position: editPosIri.value || '',
+    } satisfies ApiUserCreate
 
-      callUpdate(updatedUser)
-      emits('success')
-      showToast('success', `Zaktualizowano ${user.first_name} ${user.last_name}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się zaktualizować.`)
-    }
+    await useUpdate(props.route).callUpdate(updatedUser, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          emits('success')
+          showToast('success', `Zaktualizowano ${user.first_name} ${user.last_name}`)
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się zaktualizować.`)
+      },
+    })
   }
 </script>
 

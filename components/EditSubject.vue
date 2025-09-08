@@ -17,7 +17,6 @@
   )
 
   const emits = defineEmits(['abort', 'success'])
-  const { callUpdate } = useUpdate(route)
   const { data: classTypes } = await useFetch<{ member: ClassType[] }>(ctRoute)
   const { data: users } = await useFetch<{ member: ApiUser[] }>(usrRoute)
 
@@ -35,7 +34,7 @@
           classType: iri,
           amount: value,
           subject: editable['@id'],
-        } as any)
+        } satisfies SubjectGroupCreate)
       }
     }
   }
@@ -51,35 +50,35 @@
       if (editable['@id'] && value !== 0) {
         editable.subjectHours.push({
           classType: iri,
-          requiredHours: value,
+          hoursRequired: value,
           subject: editable['@id'],
-        } as any)
+        } satisfies SubjectHoursCreate)
       }
     }
   }
 
-  const handleUpdate = (subject: Subject): void => {
-    try {
-      console.log(subject)
-
-      const updatedSubject = {
-        ...subject,
-        //   roles: [roleSelect.value],
-        //   institute: editUnitIri.value || '',
-        //   position: editPosIri.value || ''
-      }
-
-      callUpdate(updatedSubject)
-      emits('success')
-      showToast('success', `Zaktualizowano ${subject.name}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się zaktualizować.`)
+  const handleUpdate = async (subject: Subject): Promise<void> => {
+    const updatedSubject = {
+      ...subject,
+      //   roles: [roleSelect.value],
+      //   institute: editUnitIri.value || '',
+      //   position: editPosIri.value || ''
     }
+
+    await useUpdate(route).callUpdate(updatedSubject as Subject, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Zaktualizowano ${subject.name}`)
+          emits('success')
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się zaktualizować.`)
+      },
+    })
   }
   const removeLecturer = (i: number) => {
-    console.log(editable.subjectLecturers)
     editable.subjectLecturers.splice(i, 1)
-    console.log(editable.subjectLecturers)
   }
 
   const addSubjectLecturer = () => {
@@ -165,9 +164,9 @@
                 (g) => g.classType['@id'] === ct['@id'] || g.classType === ct['@id']
               )?.hoursRequired || ''
             "
+            required
             @input="onAmountChangeHours(ct['@id'], Number($event.target.value))"
             class="block rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            required
           />
         </div>
       </template>

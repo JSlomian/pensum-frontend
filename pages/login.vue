@@ -10,7 +10,6 @@
   })
   const email = ref('')
   const password = ref('')
-  const error = ref('')
 
   const handleSubmit = async () => {
     try {
@@ -26,7 +25,6 @@
       await router.push('/')
     } catch (err: any) {
       let apiError = 'Nie udało się zalogować'
-      console.log(err)
       // if (res.response.status === 401) {
       apiError = apiError + ', nieprawidłowe hasło lub login.'
       // }

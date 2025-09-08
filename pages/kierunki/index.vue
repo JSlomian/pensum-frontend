@@ -12,8 +12,6 @@
   const { data, refresh } = await useFetch<{ member: Major[] }>(route)
   const { data: institutes } = await useFetch<{ member: Institute[] }>(unitsRoute)
 
-  const { callUpdate } = useUpdate(route)
-  const { callDelete } = useDelete(route)
   const editId = ref<number>(0)
   const editUnitIri = ref<string>('')
   const deleteId = ref<number>(0)
@@ -29,54 +27,55 @@
     }
   }
 
-  const cancelEdit = (): void => {
-    editId.value = 0
-    editUnitIri.value = ''
-  }
-
   const handleDelete = async (id: number): Promise<void> => {
-    let major: Major | undefined
-    try {
-      major = data.value?.member.find((m: Major) => m.id === id)
-      if (!major) {
-        await showToast('danger', 'Przekazano id do nieistniejącej pozycji')
-        modalOpen.value = false
-        return
-      }
-      const res = await callDelete(major.id)
-      if (res.data?.value?.statusCode === 409) {
-        await showToast(
-          'danger',
-          `Nie można usunąć ${major.name} ponieważ istnieją powiązane programy na kierunkach`
-        )
-        return
-      }
-      refresh()
-      await showToast('success', `Usunięto ${major.name}`)
-    } catch (e) {
-      await showToast('danger', `Nie udało się usunąć.`)
-    } finally {
+    const major: Major | undefined = data.value?.member.find((m: Major) => m.id === id)
+    if (!major) {
+      showToast('danger', 'Przekazano id do nieistniejącej pozycji')
       modalOpen.value = false
+      return
     }
+    await useDelete(route).callDelete(major.id, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Usunięto ${major.name}`)
+          handleCancelEdit()
+        }
+      },
+      onResponseError({ response }: { response: Response }) {
+        if (response.status === 409) {
+          showToast(
+            'danger',
+            `Nie można usunąć ${major.name} ponieważ istnieją powiązane programy na kierunkach`
+          )
+        }
+        showToast('danger', `Nie udało się usunąć.`)
+      },
+    })
   }
 
-  const handleUpdate = (major: Major): void => {
-    try {
-      const updatedMajor = {
-        ...major,
-        institute: editUnitIri.value || '',
-      }
-
-      callUpdate(updatedMajor)
-      handleCancelEdit()
-      showToast('success', `Zaktualizowano ${major.name}`)
-    } catch (e) {
-      showToast('danger', `Nie udało się zaktualizować.`)
+  const handleUpdate = async (major: Major): Promise<void> => {
+    const updatedMajor = {
+      ...major,
+      institute: editUnitIri.value || '',
     }
+
+    await useUpdate(route).callUpdate(updatedMajor, {
+      onResponse({ response }: { response: Response }) {
+        if (response.ok) {
+          showToast('success', `Zaktualizowano ${major.name}`)
+          handleCancelEdit()
+        }
+      },
+      onResponseError() {
+        showToast('danger', `Nie udało się zaktualizować.`)
+      },
+    })
   }
 
   const handleCancelEdit = (): void => {
-    cancelEdit()
+    editId.value = 0
+    editUnitIri.value = ''
+    modalOpen.value = false
     refresh()
   }
 

@@ -10,8 +10,10 @@ useHead({
 </script>
 
 <template>
+  <div>
   <NuxtPage/>
   <Toaster/>
+  </div>
 </template>
 
 

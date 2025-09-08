@@ -18,6 +18,7 @@ onMounted(() => {
 })
 </script>
 <template>
+  <div>
   <nav>
     <NavBar/>
   </nav>
@@ -25,6 +26,7 @@ onMounted(() => {
     <NuxtPage/>
   </main>
   <Toaster/>
+  </div>
 </template>
 
 
