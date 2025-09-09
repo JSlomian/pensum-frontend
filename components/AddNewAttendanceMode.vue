@@ -59,7 +59,7 @@
   >
     <div class="space-y-6">
       <h5 class="text-xl font-medium text-gray-900 dark:text-white">
-        Dodaj nowy tryb uczęszczania
+        Dodaj poziom nauczania
       </h5>
       <div class="grid md:grid-cols-2 md:gap-6">
         <div class="group relative z-0 mb-5 w-full">

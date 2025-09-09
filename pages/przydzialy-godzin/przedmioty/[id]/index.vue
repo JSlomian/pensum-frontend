@@ -220,7 +220,7 @@
                     <span
                       v-for="(sj, index) in subject.subjectLecturers as SubjectLecturer[]"
                       :key="sj.id"
-                      class="mr-2 inline-block"
+                      :class="[(subject.subjectLecturers.length < 4) ? 'mr-2 inline-block' : 'mr-2 flex flex-row justify-end']"
                     >
                       <span v-if="classTypes?.member" class="inline-block w-[32px] border-r pe-1">
                         {{

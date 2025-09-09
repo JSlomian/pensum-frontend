@@ -23,11 +23,9 @@
         }
       )
       await router.push('/')
-    } catch (err: any) {
+    } catch (e) {
       let apiError = 'Nie udało się zalogować'
-      // if (res.response.status === 401) {
       apiError = apiError + ', nieprawidłowe hasło lub login.'
-      // }
       await showToast('danger', apiError)
     }
   }

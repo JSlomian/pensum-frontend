@@ -1,5 +1,12 @@
+<script setup lang="ts">
+  const router = useRouter()
+  const { getSession } = useAuth()
+  const user = await getSession()
+  router.push(`/raport/${user.id}`) 
+</script>
 <template>
-  <section class="bg-white dark:bg-gray-900">
+  <div></div>
+  <!-- <section class="bg-white dark:bg-gray-900">
     <div class="mx-auto max-w-screen-md px-4 py-8 text-center lg:px-12 lg:py-16">
       <svg
         class="mx-auto mb-4 h-10 w-10 text-gray-400"
@@ -20,7 +27,7 @@
         Our Enterprise administrators are performing scheduled maintenance.
       </p>
     </div>
-  </section>
+</section> -->
 </template>
 
 <script setup></script>

@@ -55,14 +55,14 @@
         <ul
           class="mt-4 flex flex-col font-medium md:mt-0 md:flex-row md:space-x-8 rtl:space-x-reverse"
         >
-          <li>
+          <!-- <li>
             <NuxtLink
               href="/"
               class="block border-b border-gray-100 px-3 py-2 text-blue-600 hover:bg-gray-50 dark:border-gray-700 dark:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-blue-500 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
               aria-current="page"
               >Strona Główna
             </NuxtLink>
-          </li>
+</li> -->
           <li v-if="isAdmin">
             <button
               id="mega-menu-icons-dropdown-button"

@@ -36,7 +36,6 @@
         showToast('danger', `Nie udało się usunąć.`)
       },
     })
-    modalOpen.value = false
   }
 
   const handleUpdate = async (prog: Program): Promise<void> => {
@@ -56,6 +55,7 @@
   const handleCancelEdit = (): void => {
     editId.value = 0
     editPimIri.value = ''
+    modalOpen.value = false
     refresh()
   }
 
@@ -99,6 +99,7 @@
               <th scope="col" class="px-6 py-3">Kierunek</th>
               <th scope="col" class="px-6 py-3">Semestr</th>
               <th scope="col" class="px-6 py-3">Rok</th>
+              <th scope="col" class="px-6 py-3">(Rok sylabusowy)</th>
               <th scope="col" class="px-6 py-3">
                 <span class="sr-only">Action</span>
               </th>
@@ -125,6 +126,9 @@
               </td>
               <td class="px-6 py-4">
                 {{ prog.planYear }}
+              </td>
+              <td class="px-6 py-4">
+                ({{ prog.syllabusYear }})
               </td>
               <td class="px-6 py-4 text-right">
                 <div v-if="editId === prog.id">

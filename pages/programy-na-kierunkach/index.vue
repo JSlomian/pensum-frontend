@@ -20,8 +20,6 @@
     attendanceModesRoute
   )
 
-  const { callUpdate } = useUpdate(route)
-  const { callDelete } = useDelete(route)
   const editId = ref<number>(0)
   const editMajorIri = ref<string>('')
   const editEducationLevelIri = ref<string>('')
@@ -29,25 +27,6 @@
   const deleteId = ref<number>(0)
   const modalOpen = ref<boolean>(false)
   const modalText = ref<string>('')
-
-  // const startEdit = (pim: ProgramInMajor) => {
-  //   editId.value = pim.id
-  //   if (typeof pim.major === 'string') {
-  //     editMajorIri.value = pim.major
-  //   } else {
-  //     editMajorIri.value = pim.major!['@id']
-  //   }
-  //   if (typeof pim.educationLevel === 'string') {
-  //     editEducationLevelIri.value = pim.educationLevel
-  //   } else {
-  //     editEducationLevelIri.value = pim.educationLevel!['@id']
-  //   }
-  //   if (typeof pim.attendanceMode === 'string') {
-  //     editAttendanceModeIri.value = pim.attendanceMode
-  //   } else {
-  //     editAttendanceModeIri.value = pim.attendanceMode!['@id']
-  //   }
-  // }
 
   const handleDelete = async (id: number): Promise<void> => {
     const pim: ProgramInMajor | undefined = data.value?.member.find(
@@ -73,27 +52,7 @@
           )
         }
         showToast('danger', `Nie udało się usunąć.`)
-      },
-    })
-  }
-
-  const handleUpdate = async (pim: ProgramInMajor): Promise<void> => {
-    const updatedPim = {
-      ...pim,
-      major: editMajorIri.value || '',
-      attendanceMode: editAttendanceModeIri.value || '',
-      educationLevel: editEducationLevelIri.value || '',
-    }
-
-    await useUpdate(route).callUpdate(updatedPim, {
-      onResponse({ response }: { response: Response }) {
-        if (response.ok) {
-          handleCancelEdit()
-          showToast('success', `Zaktualizowano`)
-        }
-      },
-      onResponseError() {
-        showToast('danger', `Nie udało się zaktualizować.`)
+        handleCancelEdit()
       },
     })
   }
