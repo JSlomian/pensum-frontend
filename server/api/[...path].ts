@@ -23,6 +23,9 @@ export default defineEventHandler(async (event) => {
   if (authToken) {
     outHeaders.Authorization = `Bearer ${authToken}`
   }
+  if (event.node.req.headers.origin) {
+    outHeaders['Origin'] = event.node.req.headers.origin
+  }
 
   try {
     return await $fetch(`${api_url}${path}`, {
