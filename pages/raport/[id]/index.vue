@@ -4,17 +4,21 @@
   const id = routeString.params.id
   const usrRoute = `/api/users/${id}`
   const usrsRoute = `/api/users`
-  const slRoute = `/api/subject_lecturers?user.id=${id}`
-  // const sRoute = `/api/subjects?subjectLecturers.user.id=${id}`
   const ctRoute = `/api/class_types`
   const { data: userData } = await useFetch<ApiUser>(usrRoute)
   const { data: usersData } = await useFetch<{ member: ApiUser[] }>(usrsRoute)
-  const { data } = await useFetch<{ member: SubjectLecturer[] }>(slRoute)
-  // const { data: subjects } = await useFetch<{ member: Subject[] }>(sRoute)
   const { data: classTypes } = await useFetch<{ member: ClassType[] }>(ctRoute)
+  const subjects: Subject[] | undefined = userData.value?.subjectLecturers
+    ?.map((subjectLecturer) => subjectLecturer.subject)
+    .filter((subject, index, self) => index === self.findIndex((s) => s['@id'] === subject['@id']))
+
+  const programIds: Program[] | undefined = subjects.value?.member.map((prog) => prog.program)
+  const programsRoute = `/api/programs?id=${programIds?.join(',')}`
+  const { data: programs } = await useFetch<{ member: Program[] }>(programsRoute)
+
   useHead(
     computed(() => {
-      if (data.value) {
+      if (userData.value) {
         return {
           title: `Raport ${userData.value?.first_name} ${userData.value?.last_name}`,
         }
@@ -30,29 +34,48 @@
 
   const isAdmin = user && user.roles.includes('ROLE_ADMIN')
 
-  const getHoursRatio = (sl: SubjectLecturer, ct: ClassType): number | '\u00A0' => {
+  const getHoursRatio = (subject: subject, ct: ClassType): number | '\u00A0' => {
+    const sl = userData.value.subjectLecturers.find(
+      (s) =>
+        typeof s === 'object' &&
+        s.classType['@id'] === ct['@id'] &&
+        subject['@id'] === s.subject['@id']
+    )
+    if (sl === undefined) {
+      return '\u00A0'
+    }
+    const hours = sl.subjectHours
     const required =
       sl.subject.subjectHours?.find((sh) => sh.classType['@id'] === ct['@id'])?.hoursRequired ?? NaN
-
-    const val = sl.subjectHours / required
+    const val = hours / required
 
     return isNaN(val) || !isFinite(val) ? '\u00A0' : val
   }
 
-  const getSpecialityShortcut = (sl: SubjectLecturer): string => {
+  const getSpecialityShortcut = (subjectIri: string): string => {
+    const prog = programs.value?.member.find((prog) => prog.subject?.includes(subjectIri))
+    if (prog === undefined) {
+      return ''
+    }
     return (
-      sl.subject.program.programInMajors.major?.abbreviation +
+      prog.programInMajors.major?.abbreviation +
       '-' +
-      sl.subject.program.programInMajors.educationLevel.abbreviation +
+      prog.programInMajors.educationLevel.abbreviation +
       '-' +
-      sl.subject.program.programInMajors.attendanceMode.abbreviation
+      prog.programInMajors.attendanceMode.abbreviation
     )
   }
 
-  const sumGroups = (sl: SubjectLecturer): number => {
-    return sl.subject.subjectGroups.reduce((sum: number, group: SubjectGroup) => {
-      const groupRatio = getHoursRatio(sl, group.classType)
+  const sumGroups = (subject: Subject): number => {
+    return classTypes.value.member.reduce((sum: number, ct: classType) => {
+      const groupRatio = getHoursRatio(subject, ct)
       return sum + (typeof groupRatio === 'number' ? groupRatio : 0)
+    }, 0)
+  }
+  const sumHours = (subject: Subject): number => {
+    const sls = userData.value.subjectLecturers.filter((sl) => sl.subject['@id'] === subject['@id'])
+    return sls.reduce((sum: number, l: subjectLecturers) => {
+      return sum + (typeof l.subjectHours === 'number' ? l.subjectHours : 0)
     }, 0)
   }
 </script>
@@ -122,7 +145,7 @@
 
     <div class="relative mt-5 overflow-x-auto shadow-md sm:rounded-lg">
       <table
-        v-if="data"
+        v-if="subjects && subjects.length > 0"
         class="w-full table-auto text-left text-sm text-gray-500 dark:text-gray-400"
       >
         <thead
@@ -160,18 +183,18 @@
         </thead>
         <tbody>
           <tr
-            v-for="sl in data?.member"
-            :key="sl.id"
+            v-for="subject in subjects as SubjectLecturer[]"
+            :key="subject['@id']"
             class="border-b border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
           >
             <th scope="row" class="whitespace-nowrap ps-6 text-gray-900 dark:text-white">
               <span>
-                {{ sl.subject.name }}
+                {{ subject.name }}
               </span>
             </th>
             <td class="">
               <span>
-                {{ getSpecialityShortcut(sl) }}
+                {{ getSpecialityShortcut(subject['@id']) }}
               </span>
             </td>
             <td class="text-center">
@@ -180,7 +203,7 @@
                 :key="ct.id"
                 :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes?.member?.length ? 'border-l' : ''}`"
               >
-                {{ getHoursRatio(sl, ct) }}
+                {{ getHoursRatio(subject, ct) }}
               </span>
             </td>
             <td class="text-center">
@@ -189,23 +212,24 @@
                 :key="ct.id"
                 :class="`inline-block w-[32px] text-center ${index !== 0 && index !== classTypes?.member?.length ? 'border-l' : ''}`"
               >
-                {{ sl.classType['@id'] === ct['@id'] ? sl.subjectHours : '&nbsp;' }}
+                {{
+                  userData.subjectLecturers.find(
+                    (sl) =>
+                      typeof sl === 'object' &&
+                      sl.classType['@id'] === ct['@id'] &&
+                      sl.subject['@id'] === subject['@id']
+                  )?.subjectHours ?? '&nbsp;'
+                }}
               </span>
             </td>
-            <td>{{ sumGroups(sl) }}</td>
-            <td>
-              {{ sl.subjectHours }}
-              <!--            {{-->
-              <!--              sl.subjectHours.reduce((sum: number, hours: SubjectHours) => {-->
-              <!--                return sum + hours.hoursRequired-->
-              <!--              })}}-->
-            </td>
+            <td>{{ sumGroups(subject) }}</td>
+            <td>{{ sumHours(subject) }}</td>
           </tr>
         </tbody>
       </table>
     </div>
     <AlertWarning
-      v-if="data?.member && data?.member?.length == 0"
+      v-if="subjects && subjects.length == 0"
       message="Brak przedmiotów w raporcie."
     />
   </div>

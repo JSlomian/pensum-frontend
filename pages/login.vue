@@ -20,6 +20,9 @@
         },
         {
           redirect: false,
+          fetchOptions: {
+            credentials: 'include' 
+          },
         }
       )
       await router.push('/')

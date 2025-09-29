@@ -5,10 +5,21 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['types/*.d.ts'],
   },
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
   runtimeConfig: {
     public: {
       api_url: 'https://api.ddev.site',
+    },
+    fetch: {
+      options: {
+        credentials: 'include',
+      },
     },
   },
   compatibilityDate: '2024-11-01',

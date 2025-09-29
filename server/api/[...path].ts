@@ -17,9 +17,13 @@ export default defineEventHandler(async (event) => {
 
   const authToken = getCookie(event, 'auth.token')
   const refreshToken = getCookie(event, 'auth.refresh')
-  const outHeaders: Record<string, string> = {
-    ...(event.node.req.headers as Record<string, string>),
+  const forbidden = ['host', 'connection', 'content-length']
+  const outHeaders: Record<string, string> = {}
+  for (const [key, value] of Object.entries(event.node.req.headers)) {
+  if (value && !forbidden.includes(key.toLowerCase())) {
+    outHeaders[key] = String(value)
   }
+}
   if (authToken) {
     outHeaders.Authorization = `Bearer ${authToken}`
   }
